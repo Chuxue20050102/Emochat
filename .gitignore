@@ -1,0 +1,52 @@
+# ============ Frontend (UniApp/Vue) ============
+/frontend/unpackage/
+/frontend/node_modules/
+/frontend/dist/
+.hbuilderx/
+
+# ============ Backend (Python/FastAPI) ============
+/backend/__pycache__/
+/backend/venv/
+/backend/env/
+/backend/*.db
+*.pyc
+*.pyo
+*.pyd
+.idea/
+# 日志文件
+logs/
+*.log
+
+# ============ System & IDE ============
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# ============ Environment ============
+*.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# ============ Database ============
+*.sqlite
+*.sqlite3
+*.db
+/db/
+
+# ============ Uploads & Temp ============
+uploads/
+temp/
+tmp/
+cache/
+
+# ============ IDE specific ============
+*.swp
+*.swo
+*.swn
+.project
+.classpath
+.settings/
