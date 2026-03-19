@@ -8,44 +8,47 @@
 
 #> **💡 提示：** .md文件，可以vscode快捷键Ctrl + Shift + V查看
 
-建议大家后端直接用 **SQLite** 就足够了（Python自带，不需要配置 MySQL 连接啥的，直接生成一个 `.db` 文件就能跑）。一共建三张很简单的表：
+先用 **SQLite** 试试水（Python自带，不需要配置 MySQL 连接啥的，直接生成一个 `.db` 文件就能跑）。一共建三张很简单的表：
 
 ### 1. 用户表 `users`
-存用户的基本信息和账号密码。`
+存用户的基本信息和账号密码。
 
 | 字段名称 | 类型 | 说明 | 备注 |
 | :------- | :--- | :--- | :--- |
 | `id` | INTEGER | 用户ID | **主键**，自增 |
-| `account` | VARCHAR(50) | 登录账号 | 可以填手机号/普通名称 |
-| `password` | VARCHAR(100) | 登录密码 | 学生项目简单处理，直接存密码文本就好 |
+| `account` | VARCHAR(50) | 登录账号 | 唯一索引，账号名 |
+| `password` | VARCHAR(100) | 登录密码 | 存储加密或明文密码 |
 | `nickname` | VARCHAR(50) | 昵称 | 比如 "孤独的星星" |
-| `avatar_url` | VARCHAR(255) | 头像链接 | 可以前端写死几个本地默认头像供选择 |
-| `is_guest` | BOOLEAN | 是否是游客 | 需求里的“先体验”功能。0=正式, 1=游客 |
-| `created_at` | DATETIME | 注册时间 | |
+| `avatar_url` | VARCHAR(255) | 头像链接 | 可为空 |
+| `is_guest` | BOOLEAN | 是否是游客 | 默认为 False，1=游客 |
+| `created_at` | DATETIME | 注册时间 | 自动生成 UTC 时间 |
 
 ### 2. 情绪打卡记录表 `emotion_records`
-用户完成“情绪签到”，或者是 AI Agent 后来从聊天中替你提取总结的，都存在这里。
+用户完成“情绪签到”的数据。
 
 | 字段名称 | 类型 | 说明 | 备注 |
 | :------- | :--- | :--- | :--- |
 | `id` | INTEGER | 记录ID | **主键**，自增 |
-| `user_id` | INTEGER | 是谁写的 | **外键** 关联 users.id |
-| `mood` | VARCHAR(20) | 选择的心情 | 比如：`很好`, `一般`, `很糟糕` |
-| `tags` | VARCHAR(255) | 标签 | 简单起见，把原因和情绪拼接成字符串存，用逗号隔开 (比如 `"学习,人际,焦虑"`)，不需要搞成复杂的 JSON 数组。 |
-| `description`| TEXT | 具体感悟 | 写的随笔段落 |
-| `record_date`| DATE | 签到日期 | 格式 `YYYY-MM-DD`。这个字段用来在日历上画点。 |
+| `user_id` | INTEGER | 用户ID | **外键** 关联 users.id (CASCADE) |
+| `mood` | VARCHAR(20) | 心情关键词 | 如：`calm`, `happy`, `sad` |
+| `tags` | VARCHAR(255) | 标签字符串 | 逗号分隔，如 `"学习,人际,焦虑"` |
+| `description`| TEXT | 感悟随笔 | 详细文字内容 |
+| `record_date`| DATE | 签到日期 | 格式 `YYYY-MM-DD` |
 
 ### 3. 聊天消息表 `chat_messages`
-存放人和 AI 发的消息，用来展示对话列表，也是大模型的记忆上下文库。
+存放人和 AI 的对话历史。
 
 | 字段名称 | 类型 | 说明 | 备注 |
 | :------- | :--- | :--- | :--- |
-| `id` | INTEGER | 消息ID | **主键**，自增 |
-| `user_id` | INTEGER | 谁在聊 | **外键** 关联 users.id |
-| `role` | VARCHAR(10) | 发送人角色 | `user` 表示用户发的，`assistant` 表示 AI 大模型发的 |
-| `content` | TEXT | 消息文字内容 | AI 回复的话，或者是用户说的话 |
-| `card_record_id`| INTEGER| 绑定的情绪打卡ID | **可为空**。如果用户是把刚记完的日记发送给AI，这块可以存一下那条记录的ID，方便UI展示。 |
-| `created_at` | DATETIME | 发送时间 | 聊天框按这个时间排先后 |
+| `id` | INTEGER | 消息ID | **主键** |
+| `user_id` | INTEGER | 用户ID | **外键** 关联 users.id (CASCADE) |
+| `role` | VARCHAR(10) | 角色 | `user` 或 `assistant` |
+| `content` | TEXT | 消息文字 | 对话内容 |
+| `card_record_id`| INTEGER| 关联记录ID | 可为空，关联对应的打卡卡片 |
+| `created_at` | DATETIME | 发送时间 | 自动生成 UTC 时间 |
+
+### 4. 问候语表 `greetings` (补充)
+首页随机展示的句子。包含 `id`, `content`, `author` 三个字段。
 
 ---
 
@@ -77,48 +80,49 @@
 ### 2. 登录注册相关 `/api/auth`
 
 #### 2.1 注册账号
-- **POST** `/auth/register`
+- **POST** `/api/auth/register`
 - **前端发给后端**: `{ "account": "admin", "password": "123", "nickname": "小明" }`
-- **后端返回**: 保存到数据库，返回 `{ "code": 200, "data": { "user_id": 1 } }`。
+- **后端返回**: 保存到数据库，返回 `{ "code": 200, "data": { "user_id": 1 }, "msg": "ok" }`。
 
 #### 2.2 登录
-- **POST** `/auth/login`
+- **POST** `/api/auth/login`
 - **前端发给后端**: `{ "account": "admin", "password": "123" }`
-- **后端返回**: 查库对号入座，成功返回 `{ "code": 200, "data": { "user_id": 1, "nickname": "小明" } }`。
+- **后端返回**: `{ "code": 200, "data": { "user_id": 1, "nickname": "小明" }, "msg": "ok" }`。
 
-#### 1.3 游客“先体验”
-- **POST** `/auth/guest`
-- **说明**: 直接请求，不需要传参。后端直接在 `users` 表造一个假用户（`is_guest=True`）。
-- **后端返回**: 返回临时身份 `{ "code": 200, "data": { "user_id": 99 } }`。
+#### 2.3 游客“先体验”
+- **POST** `/api/auth/guest`
+- **说明**: 自动创建随机账号。
+- **后端返回**: 返回临时身份 `{ "code": 200, "data": { "user_id": 99, "nickname": "游客_xxxx" } }`。
 
 ---
 
 ### 2. 情绪功能 `/api/emotion`
 
 #### 2.1 提交情绪签到记录
-- **POST** `/emotion/record`
+- **POST** `/api/emotion/record`
 - **前端发给后端**:
   ```json
   {
     "user_id": 1,
-    "mood": "很糟糕",
-    "tags": "学习,失落",
-    "description": "今天作业太多了，熬夜写不完"
+    "mood": "happy",
+    "tags": "学习,成就感",
+    "description": "今天终于调通了 AI 接口！",
+    "record_date": "2026-03-19" 
   }
   ```
-- **后端返回**: 保存成功。若用户还要“一键发给AI”，前端可继续调下一个接口。
+- **后端返回**: `{ "code": 200, "msg": "记录成功" }`
 
 #### 2.2 取当月每一天的情绪日历
-- **GET** `/emotion/calendar?user_id=1&year=2026&month=3`
-- **说明**: 前端“我的”页面有个月历，为了知道哪天要标什么颜色，调这个接口。
-- **后端返回**: 用字典传回去（哪天是什么心情）。
+- **GET** `/api/emotion/calendar?user_id=1&year_month=2026-03`
+- **说明**: 用于日历图点渲染。
+- **后端返回**:
   ```json
   {
     "code": 200,
-    "data": {
-      "2026-03-01": "很好",
-      "2026-03-12": "很糟糕"
-    }
+    "data": [
+      { "date": "2026-03-01", "mood": "calm" },
+      { "date": "2026-03-19", "mood": "happy" }
+    ]
   }
   ```
 
@@ -131,7 +135,7 @@
 ### 3. AI 聊天功能 `/api/chat`
 
 #### 3.1 核心：用户发消息拿 AI 回复
-- **POST** `/chat/send`
+- **POST** `/api/chat/send`
 - **前端发给后端**:
   ```json
   {
@@ -140,8 +144,7 @@
     "card_record_id": 102 
   }
   ```
-  *(说明：`card_record_id` 是可选的。如果刚签到完直接带过去，AI 就能结合里面的标签安慰你。没有就传空)*
-- **后端干的事**: 调用大模型 (DeepSeek + Prompt) -> 存到 `chat_messages` 表 -> 返回给前端。
+- **后端干的事**: 调用通义千问 (Qwen-Plus) -> 存到数据库 -> 返回。
 - **后端返回**:
   ```json
   {
@@ -152,16 +155,13 @@
     }
   }
   ```
-  *(注：如果大模型通过提示词检测到比如“自杀”等极端词汇，后端把 `is_crisis` 置为 true，前端看到 true 就可以弹个大警告框提示求助热线。)*
 
 #### 3.2 加载以前的聊天内容
-- **GET** `/chat/history?user_id=1`
-- **说明**: 一点进“和我聊聊”页面，把以前的对话记录拉出来，展示气泡。
+- **GET** `/api/chat/history?user_id=1`
+- **返回**: 列表形式的对话历史。
 
 #### 3.3 清空历史聊天记录
-- **DELETE** `/chat/history?user_id=1`
-- **说明**: 当用户想换个心情重新开始时，点击该按钮，清空他和 AI 所有的对话气泡。
-- **后端干的事**: 调用数据库删除 `chat_messages` 表里所有属于这个 `user_id` 的记录。
+- **DELETE** `/api/chat/history?user_id=1`
 - **后端返回**: `{ "code": 200, "msg": "已清空与 AI 的所有回忆" }`
 
 ---
@@ -169,11 +169,9 @@
 ### 4. 个人信息 `/api/user`
 
 #### 4.1 获取“我的”页面资料
-- **GET** `/user/profile?user_id=1`
-- **后端返回**: 返回昵称，及总共打了多少天卡等数字概览即可。
+- **GET** `/api/user/profile?user_id=1`
+- **后端返回**: `{ "code": 200, "data": { "nickname": "xxx", "total_days": 10 }, "msg": "ok" }`
 
 #### 4.2 注销账号
-- **DELETE** `/user/account?user_id=1`
-- **说明**: 提供给用户删除账号及所有隐私数据的选项。
-- **后端干的事**: 连带删除 `users`，`emotion_records` 和 `chat_messages` 中绑定了这个 `user_id` 的所有数据记录。
+- **DELETE** `/api/user/account?user_id=1`
 - **后端返回**: `{ "code": 200, "msg": "账号已永久注销" }`

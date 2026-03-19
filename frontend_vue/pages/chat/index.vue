@@ -1,6 +1,6 @@
 <template>
   <view class="container">
-    <text class="placeholder">这里是聊天模块，待开发</text>
+    <text class="placeholder">这里是聊天模块，待楚雪开发</text>
     <FloatingTabBar currentTab="chat" />
   </view>
 </template>

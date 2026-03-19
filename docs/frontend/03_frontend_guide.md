@@ -1,14 +1,11 @@
 > **💡 提示：** .md文件，可以vscode快捷键Ctrl + Shift + V查看
-# 前端开发指南 (Vue3 + UniApp 大作业版)
-
-虽然我们说这是“学生期末大作业版本”，但结构上我们引入了**私有组件切块（Component Splitting）**，这是一个妥妥的企业级规范大动作。
 
 ## 1. 文件夹都是干嘛的？ (在哪写代码)
 
-所有的前端代码都在 `frontend` 目录下。
+所有的前端代码都在 `frontend_vue` 目录下。
 
 ```text
-frontend/
+frontend_vue/
 ├── pages/                  # 🟢 页面入口：
 │   ├── guide/index.vue     # 【引导页】介绍APP，含有组件components/GuideDynamic.vue等
 │   ├── login/index.vue     # 【登录页】包含components/LoginRegisterForm.vue
@@ -24,6 +21,7 @@ frontend/
 │
 ├── components/             # 🟡 公共全局组件：
 │   └── FloatingTabBar.vue  # 我们没有使用死板丑陋的原生 tabBar，把它做成了全局圆角悬浮导航
+│
 │
 ├── static/                 # 🖼️ 静态资源大本营：
 │   └── images/login/       # 所有页面需要的切图全部按页面类别放这里，引用永远用绝对路径 /static/xxx
@@ -48,4 +46,4 @@ frontend/
 2. **所有组件去中心化调用**：现在比如在 `pages/profile` 里面，要请求月历数据，不需要繁琐的层层传递。我们在页面里的 `<script setup>` `onShow` 时，直接 `uni.getStorageSync('user_id')`，然后调用 `@/api/index.js` 发给后端，丝滑无比。
 3. **彻底治愈的组件封装**：像打卡的“五个步骤”，或者月历的渲染，绝对不要再堆砌几千行 `index.vue` 代码了。
    - 如果是一个页面专有的，就像现在的 `emotion-record/components/` 一样建**私有组件**。
-   - 如果是多个页面都要用的（比如悬浮 TabBar），就在全局 `frontend/components/` 里面写。
+   - 如果是多个页面都要用的（比如悬浮 TabBar），就在全局 `frontend_vue/components/` 里面写。

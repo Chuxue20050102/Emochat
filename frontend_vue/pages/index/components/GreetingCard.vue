@@ -3,7 +3,6 @@
     <view class="greeting-emoji">☁️</view>
     <view class="greeting-text-area">
       <view class="greeting-title">今天也在慢慢变好</view>
-      <view class="greeting-subtitle">"你已经很努力了，不用再逼自己。"</view>
     </view>
   </view>
 </template>
@@ -43,10 +42,5 @@
   font-weight: 700;
   color: #1A1A1A;
   letter-spacing: 1rpx;
-}
-.greeting-subtitle {
-  font-size: 28rpx;
-  color: #777;
-  line-height: 1.5;
 }
 </style>

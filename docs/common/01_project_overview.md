@@ -7,7 +7,7 @@
 ## 1. 项目简介
 **EmoChat** 是一款极简、治愈的 AI 情绪陪伴 App（目前为学生期末大作业极速落地版本）。
 - **前端技术**: UniApp + Vue3 (Setup 语法) + 全局组件/私有组件分离架构
-- **后端技术**: Python 3.8+ + FastAPI + SQLite (轻量级本地库)
+- **后端技术**: Python 3.8+ + FastAPI + SQLite + **Qwen (通义千问) LLM**
 - **UI 风格**: 现代毛玻璃 (Glassmorphism) + 柔和极光渐变 (Aurora Gradients)
 
 ## 2. 📚 组员开发必需文档 (按职能分类)
@@ -15,30 +15,22 @@
 为了让大家开发时不迷路，文档已分类放入专有文件夹：
 
 ### 🤝 前后端共用文档 (必看)
-- 📄 **`docs/common/02_api_database_design.md`**：【核心！】前后端对接协议，定义了接口路径、请求体以及数据库的三张核心表结构。
+- 📄 **`docs/common/02_api_database_design.md`**：【核心！】定义了接口路径、请求体以及数据库的核心表结构。
 
 ### 🎨 前端组 (必看)
-- 📄 **`docs/frontend/03_frontend_guide.md`**：前端架构指南。包含了全局组件与页面私有组件（`components/`）是如何拆分的，以及 `utils/request.js` 如何发起网络请求。
-- 📄 **`docs/frontend/04_ui_design_spec.md`**：UI 视觉规范。包含极光渐变背景色、毛玻璃卡片参数以及圆角（长药丸）按钮的标准 CSS 实现。
+- 📄 **`docs/TASK_前端组.md`**：**前端组详细任务分工**。
+- 📄 **`docs/frontend/03_frontend_guide.md`**：前端架构指南。包含了全局组件与页面私有组件（`components/`）是如何拆分的。
+- 📄 **`docs/frontend/04_ui_design_spec.md`**：UI 视觉规范。包含极光渐变背景色、毛玻璃卡片参数标准 CSS 实现。
 
 ### ⚙️ 后端组 (必看)
-- 📄 **`docs/backend/05_backend_architecture.md`** & **`06_backend_guide.md`**：后端架构说明。解释了为何采用轻量级 `routers/` 分模块机制，而不是复杂的微服务。
+- 📄 **`docs/TASK_后端组.md`**：**后端组详细任务分工**。
+- 📄 **`docs/backend/05_backend_architecture.md`** & **`06_backend_guide.md`**：后端架构说明。解释了为何采用 `routers/` + `services/` 分层机制。
 
 ---
 
-## 3. 核心产品逻辑设计
+## 3. 前后端对接现状 (当前状态：本地运行 + Mock 可选 🛠️)
 
-APP 的核心体验流分为三个递进层次，满足不同维度的心理诉求：
-
-* **模块 1（纯净陪伴 - 首页）**：每日暖心语录，无需交互，提供基础的情绪抚慰。
-* **模块 2（结构化打卡 - 记录页）**：通过“感受→理解→表达”四步渐进式引导，帮助用户结构化地梳理复杂心情。
-* **模块 3（长期洞察 - 档案页）**：基于颜色的情绪月历与一句话灵魂总结，将每天的打卡转化为直观的长期心理变化趋势。
-* **模块 4（感性倾诉 - 聊天页 - 待开发）**：一键将情绪日记发送给 AI，获取更具同理心的话语抚慰。
-
-## 4. 前后端对接现状 (当前状态：前端离线 Mock 模式 🛠️)
-
-为了保证前端同学能不受后端运行环境限制，高效完成 UI 审美精装修，目前项目已开启 **Mock 模式**：
-
-- **✅ 逻辑状态**：所有 API 请求均在 `utils/request.js` 中拦截，瞬间返回本地假数据。
-- **✅ 影响范围**：登录、游客、打卡、日历均可正常点击并跳转，但数据不会存入真实数据库。
-- **✅ 回归计划**：待 UI 优化完成后，只需将 `request.js` 中的 `MOCK_MODE` 设为 `false` 即可一键恢复后端连接。
+- **✅ 运行环境**：后端项目位于 `backend_fastapi/`，自带 `.venv` 虚拟环境，运行 `python main.py` 即可启动。
+- **✅ AI 对话**：后端已集成 AI Service，直接调用大模型 API。
+- **✅ Mock 模式**：前端同学如需纯离线 UI 装修，可在 `frontend_vue/utils/request.js` 中开启 `MOCK_MODE`。
+- **✅ 一键连接**：UI 优化完成后，将 `MOCK_MODE` 设为 `false` 即可连接真实后端数据库和 AI。

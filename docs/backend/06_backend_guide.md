@@ -3,7 +3,7 @@
 # 📄 后端开发细节指南
  (Python + FastAPI)
 
-当前后端基于非常轻量的单体模块化组织。所有业务逻辑直接写在 `routers/` 里的各个文件中（如 `auth.py`, `emotion.py`, `user.py`, `common.py`）。
+当前后端基于非常轻量的单体模块化组织，项目目录为 `backend_fastapi/`（PyCharm 初始化，含 `.venv` 虚拟环境）。所有业务逻辑直接写在 `routers/` 里的各个文件中（如 `auth.py`, `emotion.py`, `user.py`, `common.py`）。
 
 ## 1. 新增一个接口的完整步骤
 
@@ -39,7 +39,7 @@ def update_nickname(req: schemas.UpdateNameRequest, db: Session = Depends(get_db
 去浏览器打开 `http://127.0.0.1:8000/docs` 就能直接在 Swagger 页面里点 `Try it out` 测试你新写的接口。
 
 ## 2. 数据库注意点
-1. **自动建表**: `main.py` 启动时执行了 `models.Base.metadata.create_all(bind=engine)`，所以修改了 `models.py` 里的字段后，SQLite 不会自动帮你更新列。如果有大规模字段变动，学生作业期间最简单的方法是**直接把当前的 `emochat.db` 删掉**，重新运行 `python main.py` 让它重建新库。
+1. **自动建表**: `main.py` 启动时执行了 `models.Base.metadata.create_all(bind=engine)`，所以修改了 `models.py` 里的字段后，SQLite 不会自动帮你更新列。如果有大规模字段变动，学生作业期间最简单的方法是**直接把 `backend_fastapi/emochat.db` 删掉**，重新运行 `python main.py` 让它重建新库。
 2. **依赖注入**: 所有操作数据库的函数接口里，统一接收 `db: Session = Depends(get_db)` 作为参数，这样能保证发完请求后自动关闭连接。
 
 ## 3. 下一步 AI 模块建议
