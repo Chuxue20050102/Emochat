@@ -37,6 +37,7 @@ def get_daily_greeting(db: Session = Depends(get_db)):
             "author": "EmoChat"
         })
 
+
 # 2. 初始化问候语数据
 @router.post("/init-greetings")
 def init_greetings(db: Session = Depends(get_db)):
