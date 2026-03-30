@@ -5,7 +5,7 @@
  * MOCK_MODE = false → 正式连接后端 API
  */
 const BASE_URL = 'http://127.0.0.1:8000'
-const MOCK_MODE = true   // ← 后端跑通后改成 false 即可
+const MOCK_MODE = false   // ← 后端跑通后改成 false 即可
 
 // ============ 假数据仓库 ============
 const MOCK_DATA = {
@@ -19,9 +19,6 @@ const MOCK_DATA = {
     },
     'GET /api/emotion/detail': [],
     'GET /api/user/profile': { nickname: '测试用户', total_records: 6 },
-    'POST /api/chat/send': { reply_msg: '我听到你了，一切都会好起来的。（Mock）', is_crisis: false },
-    'GET /api/chat/history': [],
-    'DELETE /api/chat/history': null,
 }
 
 export const request = (url, method = 'GET', data = {}) => {
@@ -39,7 +36,7 @@ export const request = (url, method = 'GET', data = {}) => {
             url: BASE_URL + url,
             method,
             data,
-            timeout: 5000,
+            timeout: 60000,
             header: {
                 'content-type': 'application/json'
             },
@@ -49,12 +46,13 @@ export const request = (url, method = 'GET', data = {}) => {
                     resolve(responseData.data)
                 } else {
                     uni.showToast({ title: responseData.msg || '请求失败', icon: 'none' })
-                    reject(responseData.msg)
+                    // 业务报错（如密码错误、账号存在），抛出一个带有标识的错误
+                    reject({ isBizError: true, msg: responseData.msg })
                 }
             },
             fail: (err) => {
                 uni.showToast({ title: '网络无法连接到本地服务器', icon: 'none' })
-                reject(err)
+                reject({ isBizError: false, err })
             }
         })
     })

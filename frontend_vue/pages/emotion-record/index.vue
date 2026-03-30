@@ -213,7 +213,7 @@ const submitRecord = async () => {
     // 成功后流转至 Step 5
     currentStep.value = 5 
   } catch(e) {
-    // 报错已在拦截器处理
+    uni.showToast({ title: '保存失败，请检查网络或后端是否启动', icon: 'none' })
   } finally {
     uni.hideLoading()
   }
