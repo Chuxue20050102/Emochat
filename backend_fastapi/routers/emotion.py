@@ -2,10 +2,9 @@ from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from datetime import date, datetime
 
-# 假设你的项目根包是 backend_fastapi
-from .. import models, schemas
-from ..database import get_db
-from ..utils import success_resp, error_resp
+from database import get_db
+import models, schemas
+from utils import success_resp, error_resp
 
 router = APIRouter(prefix="/api/emotion", tags=["2. 情绪功能"])
 

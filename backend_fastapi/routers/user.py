@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
-from .. import models, schemas
-from ..database import get_db
-from ..utils import success_resp, error_resp
+from database import get_db
+import models
+from utils import success_resp, error_resp
 
 router = APIRouter(prefix="/api/user", tags=["3. 此账号信息"])
 
