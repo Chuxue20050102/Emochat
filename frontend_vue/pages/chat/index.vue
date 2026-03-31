@@ -43,6 +43,29 @@ const scrollTopId = ref('')
 
 onShow(() => {
   uni.hideTabBar({ animation: false })
+
+  // 检查是否从情绪记录页的"和我聊聊这件事"跳过来
+  const context = uni.getStorageSync('pendingChatContext')
+  if (context) {
+    uni.removeStorageSync('pendingChatContext') // 用完即删，防止重复触发
+
+    // 把情绪记录摘要拼成一段自然语言
+    let contextMsg = `我刚才记录了"${context.emotion}"的情绪`
+    if (context.tags && context.tags.length > 0) {
+      contextMsg += `，原因和${context.tags.join('、')}有关`
+    }
+    if (context.detail && context.detail.length > 0) {
+      contextMsg += `，具体感觉是${context.detail.join('、')}`
+    }
+    if (context.content) {
+      contextMsg += `。我写了：${context.content}`
+    }
+
+    // 延迟一点再发送，确保页面渲染完成
+    setTimeout(() => {
+      sendMessage(contextMsg)
+    }, 500)
+  }
 })
 
 const sendMessage = async (text) => {
