@@ -1,7 +1,19 @@
+<<<<<<< HEAD
 from fastapi import APIRouter
 import schemas
 from utils import success_resp
 from services.ai_service import chat_with_ai
+=======
+import time
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
+
+from .. import models, schemas
+from ..database import get_db
+from ..utils import success_resp, error_resp
+# 导入 AI 服务
+from backend_fastapi.services.ai_service import chat_with_ai
+>>>>>>> origin/wlq_dev
 
 router = APIRouter(prefix="/api/chat", tags=["4. AI 聊天"])
 
