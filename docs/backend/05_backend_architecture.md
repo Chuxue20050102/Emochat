@@ -11,14 +11,14 @@ backend_fastapi/
 ├── main.py          👉 【核心入口】
 │                       创建 FastAPI 实例，挂载跨域中间件 (CORS)，并引入 routers/ 下的所有模块。
 │
-├── routers/         👉 【路由层：只负责接口定义】
+├── routers/         👉 主代码区！【路由层：只负责接口定义】先完成chat.py外的部分。
 │   ├── auth.py        - 登录、注册、游客模式接口。
 │   ├── emotion.py     - 提交打卡、获取月历数据接口。
 │   ├── user.py        - 获取用户档案统计接口。
 │   ├── chat.py        - 聊天接口（调用 services/ai_service.py 处理）。
 │   └── common.py      - 公共接口模块（如语料库）。
 │
-├── services/        👉 【逻辑层：负责干活/调用 AI】
+├── services/        👉 agent开发部分【逻辑层：负责干活/调用 AI】
 │   ├── ai_service.py  - 对接大模型 API，处理 Prompt 和对话逻辑。
 │   └── __init__.py    - 包初始化文件。
 │

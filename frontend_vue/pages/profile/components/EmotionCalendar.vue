@@ -50,9 +50,9 @@ const props = defineProps({
 
 const emit = defineEmits(['dayClick', 'monthChange'])
 
-const today = new Date('2026-03-17')
-const realTodayStr = '2026-03-17' 
-const currentDate = ref(new Date('2026-03-17'))
+const today = new Date()
+const realTodayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+const currentDate = ref(new Date())
 const isChangingMonth = ref(false)
 const weeks = ['日', '一', '二', '三', '四', '五', '六']
 

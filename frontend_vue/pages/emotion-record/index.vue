@@ -86,6 +86,7 @@ import Step4FreeInput from './components/Step4FreeInput.vue'
 import Step5Feedback from './components/Step5Feedback.vue'
 
 import { recordEmotionApi } from '@/api/index.js'
+import { emotionList, reasonTags } from '@/config/emotionConfig.js'
 
 const currentStep = ref(1)
 const selectedEmotion = ref(null)
@@ -93,18 +94,7 @@ const selectedReasons = ref([])
 const selectedSubTags = ref([])
 const textContent = ref('')
 
-// 定义七挡情绪与细分感知词库（附带更柔和的渐变色和发光色）
-const emotionList = [
-  { emoji: '😣', name: '崩溃', bgColor: 'linear-gradient(to bottom, #FAFCFF, #FFEFEA)', glowColor: 'rgba(255, 179, 167, 0.6)', subTags: ['焦虑', '委屈', '压抑', '疲惫', '痛苦', '绝望', '无助'] },
-  { emoji: '😕', name: '迷茫', bgColor: 'linear-gradient(to bottom, #FAFCFF, #F2EDFC)', glowColor: 'rgba(214, 204, 250, 0.6)', subTags: ['不知所措', '怀疑', '困惑', '无力', '空虚', '纠结'] },
-  { emoji: '🙁', name: '低落', bgColor: 'linear-gradient(to bottom, #FAFCFF, #EDF2F6)', glowColor: 'rgba(162, 184, 202, 0.6)', subTags: ['难过', '失望', '孤独', '无能为力', '沮丧', '遗憾'] },
-  { emoji: '😐', name: '平静', bgColor: 'linear-gradient(to bottom, #FAFCFF, #EDF7F1)', glowColor: 'rgba(189, 225, 205, 0.6)', subTags: ['淡然', '无聊', '波澜不惊', '放空', '发呆'] },
-  { emoji: '🙂', name: '轻松', bgColor: 'linear-gradient(to bottom, #FAFCFF, #E6F8F2)', glowColor: 'rgba(211, 240, 230, 0.6)', subTags: ['舒服', '松弛', '解脱', '自在', '宁静'] },
-  { emoji: '😊', name: '愉快', bgColor: 'linear-gradient(to bottom, #FAFCFF, #FFF6E0)', glowColor: 'rgba(255, 224, 142, 0.6)', subTags: ['放松', '满足', '开心', '小确幸', '期待'] },
-  { emoji: '😄', name: '极好', bgColor: 'linear-gradient(to bottom, #FAFCFF, #FFEFEA)', glowColor: 'rgba(255, 168, 148, 0.6)', subTags: ['激动', '狂喜', '充满力量', '感恩', '幸福'] }
-]
-
-const reasonTags = ['学习', '人际', '工作', '家庭', '情感', '健康', '金钱', '未来']
+// emotionList 和 reasonTags 已从 @/config/emotionConfig.js 导入
 
 onShow(() => {
   uni.hideTabBar({ animation: false })
@@ -213,7 +203,7 @@ const submitRecord = async () => {
     // 成功后流转至 Step 5
     currentStep.value = 5 
   } catch(e) {
-    // 报错已在拦截器处理
+    uni.showToast({ title: '保存失败，请检查网络或后端是否启动', icon: 'none' })
   } finally {
     uni.hideLoading()
   }

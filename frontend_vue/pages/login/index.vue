@@ -48,12 +48,16 @@ const handleAuthSuccess = async ({ type, data }) => {
       uni.switchTab({ url: '/pages/index/index' })
     }, 1000)
   } catch(e) {
-    console.warn('[登录失败，进入离线模式]', e)
-    // 开发阶段：后端没启动时也允许跳转，用本地临时身份
+    if (e && e.isBizError) {
+      // 如果是业务报错（比如密码错、账号重复），就在这里停止，不进入离线模式
+      return
+    }
+    console.warn('[网络或服务器异常，进入离线模式]', e)
+    // 开发阶段：后端没启动或连不上时，用本地临时身份跳过
     uni.setStorageSync('isLogin', true)
     uni.setStorageSync('user_id', Date.now())
     uni.setStorageSync('nickname', data.account || '测试用户')
-    uni.showToast({ title: '离线模式，已跳过后端', icon: 'none' })
+    uni.showToast({ title: '离线模式，本地体验中', icon: 'none' })
     setTimeout(() => {
       uni.switchTab({ url: '/pages/index/index' })
     }, 800)
@@ -74,12 +78,15 @@ const goGuest = async () => {
       uni.switchTab({ url: '/pages/index/index' })
     }, 1000)
   } catch(e) {
+    if (e && e.isBizError) {
+      return
+    }
     console.warn('[游客登录失败，进入离线模式]', e)
-    // 开发阶段：后端没启动时也允许跳转
+    // 开发阶段：后端没启动网络连不上时才进入离线
     uni.setStorageSync('isLogin', true)
     uni.setStorageSync('user_id', Date.now())
     uni.setStorageSync('nickname', '游客' + String(Date.now()).slice(-4))
-    uni.showToast({ title: '离线模式，已跳过后端', icon: 'none' })
+    uni.showToast({ title: '体验模式', icon: 'none' })
     setTimeout(() => {
       uni.switchTab({ url: '/pages/index/index' })
     }, 800)
