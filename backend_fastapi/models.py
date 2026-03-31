@@ -32,3 +32,10 @@ class ChatMessage(Base):
     content = Column(Text)
     card_record_id = Column(Integer, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class Greeting(Base):
+    __tablename__ = "greetings"
+
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    content = Column(Text, nullable=False)  # 问候语内容
+    author = Column(String(50), nullable=True)  # 作者

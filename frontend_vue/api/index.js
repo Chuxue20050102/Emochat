@@ -6,5 +6,8 @@ export const guestApi = () => post('/api/auth/guest')
 
 export const recordEmotionApi = (data) => post('/api/emotion/record', data)
 export const getCalendarApi = (data) => get('/api/emotion/calendar', data)
+export const getEmotionDetailApi = (data) => get('/api/emotion/detail', data)
 
 export const getUserProfileApi = (data) => get('/api/user/profile', data)
+
+export const sendChatApi = (data) => post('/api/chat/send', data)

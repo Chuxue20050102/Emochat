@@ -36,3 +36,25 @@ def get_daily_greeting(db: Session = Depends(get_db)):
             "content": "每一朵花都会在属于它的季节绽放，你也是。",
             "author": "EmoChat"
         })
+
+
+# 2. 初始化问候语数据
+@router.post("/init-greetings")
+def init_greetings(db: Session = Depends(get_db)):
+    # 防止重复插入
+    exists = db.query(models.Greeting).first()
+    if exists:
+        return success_resp(msg="问候语已初始化，无需重复添加")
+
+    # 要插入的数据
+    data_list = [
+        models.Greeting(content="无论今天发生什么，都请记得好好爱自己。", author="系统"),
+        models.Greeting(content="慢慢来，谁都有发光的一天。", author="系统"),
+        models.Greeting(content="你很棒，不必焦虑，不必着急。", author="系统"),
+        models.Greeting(content="每一朵花都会在属于它的季节绽放，你也是。", author="EmoChat"),
+        models.Greeting(content="允许一切发生，你已经做得很好了。", author="系统"),
+    ]
+
+    db.add_all(data_list)
+    db.commit()
+    return success_resp(msg="问候语初始化成功！")

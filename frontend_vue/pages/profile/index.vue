@@ -30,7 +30,8 @@ import TrendSummary from './components/TrendSummary.vue'
 import EmotionCalendar from './components/EmotionCalendar.vue'
 import CalendarBottomSheet from './components/CalendarBottomSheet.vue'
 
-import { getUserProfileApi, getCalendarApi } from '@/api/index.js'
+import { getUserProfileApi, getCalendarApi, getEmotionDetailApi } from '@/api/index.js'
+import { emotionRules } from '@/config/emotionConfig.js'
 
 onShow(() => { 
   uni.hideTabBar({ animation: false })
@@ -76,24 +77,34 @@ const fetchCalendarData = async () => {
   } catch(e) {}
 }
 
-const emotionRules = {
-  '崩溃': { color: '#3A0CA3', emoji: '😣', trend: '这个月，你有些辛苦' },
-  '迷茫': { color: '#4361EE', emoji: '😕', trend: '最近有点低落' },
-  '低落': { color: '#4895EF', emoji: '🙁', trend: '最近有点低落' },
-  '平静': { color: '#4CC9A6', emoji: '😐', trend: '大多数时候是平静的 🌿' },
-  '轻松': { color: '#52B788', emoji: '🙂', trend: '你在慢慢恢复' },
-  '愉快': { color: '#FFD60A', emoji: '😊', trend: '这个月有不少温暖时刻' },
-  '极好': { color: '#FB8500', emoji: '😄', trend: '这个月充满能量 ✨' }
-}
+// emotionRules 已从 @/config/emotionConfig.js 导入
 
 const selectedDate = ref('')
 const selectedDayData = ref(null)
 const showBottomSheet = ref(false)
 
-const handleDayClick = (day) => {
+const handleDayClick = async (day) => {
   selectedDate.value = day.fullDate
-  selectedDayData.value = day
   showBottomSheet.value = true
+  // 先用日历里已有的基础数据展示，再去后端拉取详情覆盖
+  selectedDayData.value = day
+
+  try {
+    const userId = uni.getStorageSync('user_id')
+    const details = await getEmotionDetailApi({ user_id: userId, date_str: day.fullDate })
+    if (details && details.length > 0) {
+      // 把详情数据中的 description、tags 合并进去
+      const enrichedRecords = details.map(d => ({
+        emotionName: d.mood,
+        emoji: emotionRules[d.mood]?.emoji || '😐',
+        content: d.description || '',
+        tags: d.tags || ''
+      }))
+      selectedDayData.value = { ...day, records: enrichedRecords }
+    }
+  } catch(e) {
+    // 详情加载失败时继续显示基础数据
+  }
 }
 
 const closeBottomSheet = () => {
