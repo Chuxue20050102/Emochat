@@ -5,12 +5,14 @@
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page1-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">一个人坐着思考 / 夜晚窗边</view>
+          <view class="illustration-container">
+            <image src="../../static/images/thinking-by-window.jpg" mode="aspectFit" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">有时候<br>情绪很难表达</view>
-            <view class="subtitle">忙碌的生活中<br>很多感受来不及被认真看见</view>
+            <view class="title">你的每一种情绪都值得被温柔看见</view>
+            <view class="subtitle">那些未说出口的话，那些藏在心底的感受</view>
+            <view class="subtitle">在这个快节奏的世界里</view>
+            <view class="subtitle">给自己一点时间，倾听内心的声音</view>
           </view>
         </view>
       </swiper-item>
@@ -19,12 +21,14 @@
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page2-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">日记本 / 情绪记录</view>
+          <view class="illustration-container">
+            <image src="../../static/images/journal-emotion-record.jpg.jpg" mode="aspectFit" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">记录<br>可以帮助整理情绪</view>
-            <view class="subtitle">把每天的感受记录下来<br>慢慢看见自己的变化</view>
+            <view class="title">记录是与自己对话的最好方式</view>
+            <view class="subtitle">当你写下每一份感受</view>
+            <view class="subtitle">那些混乱的情绪会逐渐变得清晰</view>
+            <view class="subtitle">时间会告诉你，记录的力量有多强大</view>
           </view>
         </view>
       </swiper-item>
@@ -33,12 +37,14 @@
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page3-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">聊天气泡 / 温暖的AI形象</view>
+          <view class="illustration-container">
+            <image src="../../static/images/ai-chat-conversation.jpg" mode="aspectFit" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">当你想要倾听时<br>AI 可以陪你聊一聊</view>
-            <view class="subtitle">表达想法<br>也许会让心情轻松一点</view>
+            <view class="title">当你需要倾听时，AI 一直都在</view>
+            <view class="subtitle">有时候，我们只是需要一个倾听者</view>
+            <view class="subtitle">不需要评判，不需要建议</view>
+            <view class="subtitle">只是静静地听你把话说完</view>
           </view>
         </view>
       </swiper-item>
@@ -191,14 +197,37 @@ const skipGuide = () => {
               radial-gradient(circle at 70% 30%, #D6E8F6 0%, transparent 50%);
 }
 
-/* 插图占位符 */
+/* 插图容器 */
+.illustration-container {
+  position: relative;
+  z-index: 1;
+  height: 500rpx;
+  margin: 40rpx 60rpx;
+  border-radius: 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: transparent;
+}
+.illustration-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 40rpx;
+  opacity: 0.9;
+  filter: saturate(0.9) brightness(1.05);
+  transition: all 0.3s ease;
+  background: transparent;
+  mix-blend-mode: soft-light;
+}
+
+/* 插图占位符（保留其他页面使用） */
 .illustration-placeholder {
   position: relative;
   z-index: 1;
   height: 500rpx;
   margin: 40rpx 60rpx;
   background-color: rgba(255,255,255,0.4);
-  border: 2rpx dashed #C7C7CC;
   border-radius: 40rpx;
   display: flex;
   justify-content: center;
@@ -219,16 +248,18 @@ const skipGuide = () => {
   text-align: center;
 }
 .title {
-  font-size: 52rpx;
+  font-size: 58rpx;
   font-weight: 600;
   color: #1A1A1A;
-  line-height: 1.4;
-  margin-bottom: 24rpx;
+  line-height: 1.3;
+  margin-bottom: 32rpx;
+  letter-spacing: 2rpx;
 }
 .subtitle {
-  font-size: 30rpx;
+  font-size: 34rpx;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
 }
 
 /* --- 底部统控台 --- */
