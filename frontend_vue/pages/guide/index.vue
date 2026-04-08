@@ -94,26 +94,44 @@ const selectedNeed = ref('record') // 默认选择
 const dynamicContentMap = {
   'record': {
     hint: '今天想整理一下自己的情绪',
-    title: '开始记录你的情绪',
-    subtitle: '把今天的感受简单记录下来<br>慢慢看见自己的情绪变化',
-    illus: '插图: 在爱心板上写字',
+    title: '用记录与情绪对话',
+    subtitle: '把每天的感受简单记录下来<br>慢慢看见自己的情绪变化轨迹',
+    description: '记录不仅仅是文字的堆砌，更是与自己内心的对话。通过每天的记录，你会逐渐发现情绪的变化规律，学会更好地理解和管理自己的情绪。',
+    image: '/static/images/record-emotion.jpg',
+    features: [
+      { icon: '📝', text: '简单记录，轻松上手' },
+      { icon: '📊', text: '情绪趋势一目了然' },
+      { icon: '🔒', text: '隐私保护，安全可靠' }
+    ],
     btn: '开始记录 →',
     path: '/pages/login/index'
   },
   'chat': {
     hint: '想找个地方聊聊天',
-    title: '找个地方聊聊天',
-    subtitle: '如果有想说的话<br>可以和 AI 慢慢聊一聊',
-    illus: '插图: 和小幽灵聊天喝咖啡',
+    title: 'AI 陪你聊聊心里话',
+    subtitle: '如果有想说的话<br>可以和 AI 慢慢聊一聊，释放内心压力',
+    description: '有时候，我们只是需要一个倾听者，不需要评判，不需要建议。AI 会耐心倾听你的每一句话，给你最温暖的回应，让你感受到被理解和被关心。',
+    image: '/static/images/ai-chat.jpg',
+    features: [
+      { icon: '💬', text: '随时随地，想聊就聊' },
+      { icon: '🤖', text: '智能回应，贴心陪伴' },
+      { icon: '🌙', text: '深夜倾听，温暖守护' }
+    ],
     btn: '进入聊天 →',
     path: '/pages/login/index'
   },
   'understand': {
     hint: '想更了解自己的情绪',
-    title: '慢慢了解自己的情绪',
-    subtitle: '通过记录和回顾<br>慢慢发现自己的情绪变化',
-    illus: '插图: 看情绪折线趋势图',
-    btn: '开始体验 →',
+    title: '探索情绪背后的秘密',
+    subtitle: '通过自我观察和反思<br>发现情绪波动的规律和深层原因',
+    description: '情绪不是无缘无故产生的，每一种情绪背后都有其原因和规律。通过探索和分析，你会更了解自己，找到情绪的触发点，从而更好地掌控自己的情绪。',
+    image: '/static/images/emotion-exploration.jpg',
+    features: [
+      { icon: '🔍', text: '深入了解情绪模式' },
+      { icon: '💡', text: '发现情绪触发点' },
+      { icon: '🚀', text: '基于洞察持续成长' }
+    ],
+    btn: '开始探索 →',
     path: '/pages/login/index'
   }
 }
