@@ -4,9 +4,9 @@ from typing import Optional, List, Dict
 
 # 创建Redis连接
 redis_client = redis.Redis(
-    host='localhost',  # Redis服务器地址
+    host='127.0.0.1',  # Redis服务器地址
     port=6379,         # Redis端口
-    db=0,              # 数据库编号
+    db=1,              # 数据库编号
     decode_responses=True  # 自动解码响应为字符串
 )
 

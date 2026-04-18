@@ -4,10 +4,9 @@ EmoChat AI 服务层
 兼容 OpenAI SDK 格式。
 使用 LangChain ConversationBufferMemory 实现记忆功能。
 """
-
+from langchain_classic.memory import ConversationBufferMemory
 from openai import OpenAI
 from langchain_community.chat_message_histories import RedisChatMessageHistory
-from langchain.memory import ConversationBufferMemory
 import redis
 
 # 阿里云 DashScope OpenAI 兼容接口地址
@@ -17,9 +16,9 @@ client = OpenAI(
 )
 
 # Redis连接配置
-REDIS_HOST = 'localhost'
+REDIS_HOST = '127.0.0.1'
 REDIS_PORT = 6379
-REDIS_DB = 0
+REDIS_DB = 1
 
 # 缓存过期时间（7天）
 MEMORY_EXPIRY = 7 * 24 * 60 * 60
