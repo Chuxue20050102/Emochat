@@ -4,14 +4,28 @@
       <view class="emotion-title">现在的你，更接近哪种感觉？</view>
       <view class="emoji-list">
         <view class="emoji-item" v-for="(item, index) in emotionList" :key="index" @click="handleSelect(item)">
-          <text class="emoji-icon">{{ item.emoji }}</text>
+          <image v-if="item.name === '崩溃'" src="/static/images/emotion-crash.png" class="emoji-image"></image>
+          <image v-else-if="item.name === '迷茫'" src="/static/images/emotion-confused.png" class="emoji-image"></image>
+          <image v-else-if="item.name === '低落'" src="/static/images/emotion-down.png" class="emoji-image"></image>
+          <image v-else-if="item.name === '平静'" src="/static/images/emotion-calm.png" class="emoji-image"></image>
+          <image v-else-if="item.name === '轻松'" src="/static/images/emotion-relaxed.png" class="emoji-image"></image>
+          <image v-else-if="item.name === '愉快'" src="/static/images/emotion-happy.png" class="emoji-image"></image>
+          <image v-else-if="item.name === '极好'" src="/static/images/emotion-excellent.png" class="emoji-image"></image>
+          <text v-else class="emoji-icon">{{ item.emoji }}</text>
         </view>
       </view>
     </view>
     
     <view v-else class="selected-state fade-in">
       <view class="selected-header">
-        <text class="large-emoji">{{ selectedEmotion.emoji }}</text>
+        <image v-if="selectedEmotion.name === '崩溃'" src="/static/images/emotion-crash.png" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '迷茫'" src="/static/images/emotion-confused.png" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '低落'" src="/static/images/emotion-down.png" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '平静'" src="/static/images/emotion-calm.png" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '轻松'" src="/static/images/emotion-relaxed.png" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '愉快'" src="/static/images/emotion-happy.png" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '极好'" src="/static/images/emotion-excellent.png" class="large-emoji-image"></image>
+        <text v-else class="large-emoji">{{ selectedEmotion.emoji }}</text>
         <text class="emotion-name">{{ selectedEmotion.name }}</text>
       </view>
       <view class="emotion-reply">{{ selectedEmotion.reply }}</view>
@@ -57,23 +71,19 @@ const goToRecord = () => {
 </script>
 
 <style lang="scss" scoped>
-.module-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  border-radius: 40rpx;
-  padding: 50rpx 40rpx;
-  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.03);
-  border: 2rpx solid rgba(255, 255, 255, 0.8);
-}
+
 .emotion-card {
   min-height: 320rpx;
+  height: 320rpx;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
+  padding-top: 20rpx;
 }
 .unselected-state {
   display: flex;
   flex-direction: column;
+  gap: 35rpx;
 }
 .emotion-title {
   font-size: 34rpx;
@@ -96,6 +106,17 @@ const goToRecord = () => {
 }
 .emoji-icon {
   font-size: 56rpx;
+}
+.emoji-image {
+  width: 56rpx;
+  height: 56rpx;
+  object-fit: contain;
+}
+.large-emoji-image {
+  width: 80rpx;
+  height: 80rpx;
+  object-fit: contain;
+  margin-right: 16rpx;
 }
 
 .selected-state {

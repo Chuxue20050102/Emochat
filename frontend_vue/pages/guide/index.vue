@@ -5,12 +5,14 @@
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page1-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">一个人坐着思考 / 夜晚窗边</view>
+          <view class="illustration-container">
+            <image src="../../static/images/thinking-by-window.jpg" mode="aspectFit" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">有时候<br>情绪很难表达</view>
-            <view class="subtitle">忙碌的生活中<br>很多感受来不及被认真看见</view>
+            <view class="title">你的每一种情绪都值得被温柔看见</view>
+            <view class="subtitle">那些未说出口的话，那些藏在心底的感受</view>
+            <view class="subtitle">在这个快节奏的世界里</view>
+            <view class="subtitle">给自己一点时间，倾听内心的声音</view>
           </view>
         </view>
       </swiper-item>
@@ -19,12 +21,14 @@
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page2-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">日记本 / 情绪记录</view>
+          <view class="illustration-container">
+            <image src="../../static/images/journal-emotion-record.jpg.jpg" mode="aspectFit" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">记录<br>可以帮助整理情绪</view>
-            <view class="subtitle">把每天的感受记录下来<br>慢慢看见自己的变化</view>
+            <view class="title">记录是与自己对话的最好方式</view>
+            <view class="subtitle">当你写下每一份感受</view>
+            <view class="subtitle">那些混乱的情绪会逐渐变得清晰</view>
+            <view class="subtitle">时间会告诉你，记录的力量有多强大</view>
           </view>
         </view>
       </swiper-item>
@@ -33,12 +37,14 @@
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page3-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">聊天气泡 / 温暖的AI形象</view>
+          <view class="illustration-container">
+            <image src="../../static/images/ai-chat-conversation.jpg" mode="aspectFit" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">当你想要倾听时<br>AI 可以陪你聊一聊</view>
-            <view class="subtitle">表达想法<br>也许会让心情轻松一点</view>
+            <view class="title">当你需要倾听时，AI 一直都在</view>
+            <view class="subtitle">有时候，我们只是需要一个倾听者</view>
+            <view class="subtitle">不需要评判，不需要建议</view>
+            <view class="subtitle">只是静静地听你把话说完</view>
           </view>
         </view>
       </swiper-item>
@@ -88,26 +94,44 @@ const selectedNeed = ref('record') // 默认选择
 const dynamicContentMap = {
   'record': {
     hint: '今天想整理一下自己的情绪',
-    title: '开始记录你的情绪',
-    subtitle: '把今天的感受简单记录下来<br>慢慢看见自己的情绪变化',
-    illus: '插图: 在爱心板上写字',
+    title: '用记录与情绪对话',
+    subtitle: '把每天的感受简单记录下来<br>慢慢看见自己的情绪变化轨迹',
+    description: '记录不仅仅是文字的堆砌，更是与自己内心的对话。通过每天的记录，你会逐渐发现情绪的变化规律，学会更好地理解和管理自己的情绪。',
+    image: '/static/images/record-emotion.jpg',
+    features: [
+      { icon: '📝', text: '简单记录，轻松上手' },
+      { icon: '📊', text: '情绪趋势一目了然' },
+      { icon: '🔒', text: '隐私保护，安全可靠' }
+    ],
     btn: '开始记录 →',
     path: '/pages/login/index'
   },
   'chat': {
     hint: '想找个地方聊聊天',
-    title: '找个地方聊聊天',
-    subtitle: '如果有想说的话<br>可以和 AI 慢慢聊一聊',
-    illus: '插图: 和小幽灵聊天喝咖啡',
+    title: 'AI 陪你聊聊心里话',
+    subtitle: '如果有想说的话<br>可以和 AI 慢慢聊一聊，释放内心压力',
+    description: '有时候，我们只是需要一个倾听者，不需要评判，不需要建议。AI 会耐心倾听你的每一句话，给你最温暖的回应，让你感受到被理解和被关心。',
+    image: '/static/images/ai-chat.jpg',
+    features: [
+      { icon: '💬', text: '随时随地，想聊就聊' },
+      { icon: '🤖', text: '智能回应，贴心陪伴' },
+      { icon: '🌙', text: '深夜倾听，温暖守护' }
+    ],
     btn: '进入聊天 →',
     path: '/pages/login/index'
   },
   'understand': {
     hint: '想更了解自己的情绪',
-    title: '慢慢了解自己的情绪',
-    subtitle: '通过记录和回顾<br>慢慢发现自己的情绪变化',
-    illus: '插图: 看情绪折线趋势图',
-    btn: '开始体验 →',
+    title: '探索情绪背后的秘密',
+    subtitle: '通过自我观察和反思<br>发现情绪波动的规律和深层原因',
+    description: '情绪不是无缘无故产生的，每一种情绪背后都有其原因和规律。通过探索和分析，你会更了解自己，找到情绪的触发点，从而更好地掌控自己的情绪。',
+    image: '/static/images/emotion-exploration.jpg',
+    features: [
+      { icon: '🔍', text: '深入了解情绪模式' },
+      { icon: '💡', text: '发现情绪触发点' },
+      { icon: '🚀', text: '基于洞察持续成长' }
+    ],
+    btn: '开始探索 →',
     path: '/pages/login/index'
   }
 }
@@ -191,14 +215,37 @@ const skipGuide = () => {
               radial-gradient(circle at 70% 30%, #D6E8F6 0%, transparent 50%);
 }
 
-/* 插图占位符 */
+/* 插图容器 */
+.illustration-container {
+  position: relative;
+  z-index: 1;
+  height: 500rpx;
+  margin: 40rpx 60rpx;
+  border-radius: 40rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: transparent;
+}
+.illustration-image {
+  width: 100%;
+  height: 100%;
+  border-radius: 40rpx;
+  opacity: 0.9;
+  filter: saturate(0.9) brightness(1.05);
+  transition: all 0.3s ease;
+  background: transparent;
+  mix-blend-mode: soft-light;
+}
+
+/* 插图占位符（保留其他页面使用） */
 .illustration-placeholder {
   position: relative;
   z-index: 1;
   height: 500rpx;
   margin: 40rpx 60rpx;
   background-color: rgba(255,255,255,0.4);
-  border: 2rpx dashed #C7C7CC;
   border-radius: 40rpx;
   display: flex;
   justify-content: center;
@@ -219,16 +266,18 @@ const skipGuide = () => {
   text-align: center;
 }
 .title {
-  font-size: 52rpx;
+  font-size: 58rpx;
   font-weight: 600;
   color: #1A1A1A;
-  line-height: 1.4;
-  margin-bottom: 24rpx;
+  line-height: 1.3;
+  margin-bottom: 32rpx;
+  letter-spacing: 2rpx;
 }
 .subtitle {
-  font-size: 30rpx;
+  font-size: 34rpx;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.7;
+  letter-spacing: 1rpx;
 }
 
 /* --- 底部统控台 --- */
