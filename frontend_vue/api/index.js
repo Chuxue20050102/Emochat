@@ -11,3 +11,5 @@ export const getEmotionDetailApi = (data) => get('/api/emotion/detail', data)
 export const getUserProfileApi = (data) => get('/api/user/profile', data)
 
 export const sendChatApi = (data) => post('/api/chat/send', data)
+export const getChatHistoryApi = (data) => get('/api/chat/history', data)
+export const clearChatHistoryApi = (data) => del('/api/chat/history', data)
