@@ -7,7 +7,7 @@
       
       <view class="action-buttons">
         <button class="primary-btn action-btn" @click="$emit('goChat')">和我聊聊这件事 →</button>
-        <text class="cancel-text" @click="$emit('goHome')">完成，回首页</text>
+        <button class="secondary-btn action-btn" @click="$emit('goHome')">完成，回首页</button>
       </view>
     </view>
   </view>
@@ -85,10 +85,25 @@ defineEmits(['goChat', 'goHome'])
 .primary-btn:active {
   transform: scale(0.98);
 }
-.cancel-text {
-  font-size: 28rpx;
-  color: #999;
-  padding: 20rpx;
+.secondary-btn {
+  width: 100%;
+  height: 100rpx;
+  border-radius: 50rpx;
+  background: #F5F5DC;
+  color: #6B5B47;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 12rpx 30rpx rgba(245, 245, 220, 0.4);
+  border: 2rpx solid rgba(107, 91, 71, 0.2);
+  transition: all 0.3s ease;
+}
+.secondary-btn:active {
+  transform: scale(0.98);
+  background: #EBEBD2;
 }
 .fade-in {
   animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;

@@ -1,19 +1,19 @@
 <template>
   <view class="record-page" :style="{ background: currentBgColor }">
-    <!-- 顶部进度条与导航 (前4步显示) -->
-    <view class="header" v-if="currentStep < 5">
-      <text class="back-btn" @click="handleBack">{{ currentStep === 1 ? '关闭' : '返回' }}</text>
+    <!-- 顶部进度条与导航 (前8步显示) -->
+    <view class="header" v-if="currentStep < 9">
+      <text class="back-btn" @click="handleBack">{{ currentStep === 1 ? '返回' : '返回' }}</text>
       <view class="progress-box">
-        <text class="step-text">{{ currentStep }} <text class="step-total">/ 4</text></text>
+        <text class="step-text">{{ currentStep }} <text class="step-total">/ 8</text></text>
         <view class="progress-bar">
-          <view class="progress-inner" :style="{ width: (currentStep / 4) * 100 + '%' }"></view>
+          <view class="progress-inner" :style="{ width: (currentStep / 8) * 100 + '%' }"></view>
         </view>
       </view>
       <text class="placeholder-text"></text>
     </view>
 
     <!-- 主体滑动卡片区域 -->
-    <view class="card-container" v-if="currentStep < 5">
+    <view class="card-container" v-if="currentStep < 9">
       <swiper class="swiper" :current="currentStep - 1" @change="onSwiperChange" :indicator-dots="false" :autoplay="false">
         
         <!-- Step 1: 心情选择 (感受) -->
@@ -25,16 +25,22 @@
           />
         </swiper-item>
 
-        <!-- Step 2: 原因标签 (理解) -->
+        <!-- Step 2: 时间选择 -->
+        <swiper-item>
+          <Step1TimeSelector @select="onTimeSelect" />
+        </swiper-item>
+
+        <!-- Step 3: 原因标签 (理解) -->
         <swiper-item>
           <Step2Reason 
             :reasonTags="reasonTags" 
             :selectedReasons="selectedReasons" 
+            :selectedEmotion="selectedEmotion"
             @toggle="toggleReason" 
           />
         </swiper-item>
 
-        <!-- Step 3: 情绪细化 (命名) -->
+        <!-- Step 4: 情绪细化 (命名) -->
         <swiper-item>
           <Step3SubTags 
             :currentSubTags="currentSubTags" 
@@ -44,30 +50,43 @@
           />
         </swiper-item>
 
-        <!-- Step 4: 自由表达 (核心) -->
+        <!-- Step 5: 情绪强度与环境 -->
+        <swiper-item>
+          <Step2Intensity @select="onIntensitySelect" />
+        </swiper-item>
+
+        <!-- Step 6: 自由表达 (核心) -->
         <swiper-item>
           <Step4FreeInput v-model="textContent" />
+        </swiper-item>
+
+        <!-- Step 7: 完成反馈 -->
+        <swiper-item>
+          <Step5Feedback 
+            @goChat="goChatWithContext" 
+            @goHome="goToHome" 
+          />
+        </swiper-item>
+
+        <!-- Step 8: 历史记录预览 -->
+        <swiper-item>
+          <Step4History />
         </swiper-item>
       </swiper>
 
       <!-- 底部控制按钮区 -->
       <view class="footer-controls">
-        <template v-if="currentStep === 4">
+        <template v-if="currentStep === 8">
           <button class="primary-btn" @click="submitRecord">保存这一刻</button>
         </template>
         <template v-else-if="currentStep > 1">
           <button class="primary-btn" @click="nextStep">下一步</button>
-          <text class="skip-btn" @click="nextStep">（小字）跳过</text>
+          <button class="secondary-btn" @click="nextStep">跳过</button>
         </template>
       </view>
     </view>
 
-    <!-- Step 5: 完成反馈 (承接页) -->
-    <Step5Feedback 
-      v-if="currentStep === 5" 
-      @goChat="goChatWithContext" 
-      @goHome="goToHome" 
-    />
+
     
     <FloatingTabBar currentTab="record" />
   </view>
@@ -84,6 +103,10 @@ import Step2Reason from './components/Step2Reason.vue'
 import Step3SubTags from './components/Step3SubTags.vue'
 import Step4FreeInput from './components/Step4FreeInput.vue'
 import Step5Feedback from './components/Step5Feedback.vue'
+import Step1TimeSelector from './components/Step1TimeSelector.vue'
+import Step2Intensity from './components/Step2Intensity.vue'
+import Step3Environment from './components/Step3Environment.vue'
+import Step4History from './components/Step4History.vue'
 
 import { recordEmotionApi } from '@/api/index.js'
 
@@ -92,6 +115,10 @@ const selectedEmotion = ref(null)
 const selectedReasons = ref([])
 const selectedSubTags = ref([])
 const textContent = ref('')
+const selectedTime = ref({ date: 'today', time: 'morning' })
+const intensity = ref(5)
+const weather = ref('')
+const environment = ref('')
 
 // 定义七挡情绪与细分感知词库（附带更柔和的渐变色和发光色）
 const emotionList = [
@@ -115,6 +142,10 @@ onShow(() => {
   selectedReasons.value = []
   selectedSubTags.value = []
   textContent.value = ''
+  selectedTime.value = { date: 'today', time: 'morning' }
+  intensity.value = 5
+  weather.value = ''
+  environment.value = ''
 
   // 检查是否从首页模块2带着预选情绪过来
   const preSelected = uni.getStorageSync('preSelectedEmotion')
@@ -132,9 +163,9 @@ onShow(() => {
 })
 
 const currentBgColor = computed(() => {
-  if (currentStep.value === 5) return 'linear-gradient(to bottom, #FAFCFF, #EBF0FF)' // 承接页略带紫罗兰底色
+  if (currentStep.value === 7) return '#F5F5DC' // 承接页使用米白色
   if (selectedEmotion.value) return selectedEmotion.value.bgColor
-  return '#FAFCFF' // 初始干净浅底色
+  return '#F5F5DC' // 初始使用米白色
 })
 
 const currentSubTags = computed(() => {
@@ -174,7 +205,7 @@ const onSwiperChange = (e) => {
 
 const handleBack = () => {
   // 如果不小心切到了最后一步则不让回退卡片布局
-  if (currentStep.value === 5) return
+  if (currentStep.value === 9) return
   if (currentStep.value > 1) {
     currentStep.value -= 1
   } else {
@@ -187,9 +218,19 @@ const nextStep = () => {
     uni.showToast({ title: '请先选择一种感受', icon: 'none' })
     return
   }
-  if (currentStep.value < 4) {
+  if (currentStep.value < 8) {
     currentStep.value += 1
   }
+}
+
+const onTimeSelect = (timeData) => {
+  selectedTime.value = timeData
+}
+
+const onIntensitySelect = (data) => {
+  intensity.value = data.intensity
+  weather.value = data.weather
+  environment.value = ''
 }
 
 const submitRecord = async () => {
@@ -210,8 +251,8 @@ const submitRecord = async () => {
 
     await recordEmotionApi(payload)
     
-    // 成功后流转至 Step 5
-    currentStep.value = 5 
+    // 成功后流转至 Step 7
+    currentStep.value = 7 
   } catch(e) {
     // 报错已在拦截器处理
   } finally {
@@ -242,6 +283,11 @@ const goToHome = () => {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+  background-color: #F5F5DC;
+  font-family: 'SimSun', serif;
+  color: #6B5B47;
+  font-weight: 500;
+  font-size: 28rpx;
 }
 
 /* 顶部进度导航 */
@@ -252,9 +298,25 @@ const goToHome = () => {
   padding: 120rpx 40rpx 40rpx;
 }
 .back-btn {
-  font-size: 32rpx;
-  color: #333;
-  width: 80rpx; 
+  font-size: 30rpx;
+  color: #6B5B47;
+  width: 120rpx;
+  height: 64rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 220, 0.9));
+  border-radius: 32rpx;
+  border: 2rpx solid rgba(107, 91, 71, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(107, 91, 71, 0.15);
+  transition: all 0.3s ease;
+  font-weight: 600;
+}
+.back-btn:hover {
+  background: linear-gradient(135deg, #98D8C8, #74C7B8);
+  color: #FFF;
+  box-shadow: 0 6rpx 16rpx rgba(120, 200, 180, 0.3);
+  transform: translateY(-3rpx) scale(1.02);
 }
 .placeholder-text {
   width: 80rpx;
@@ -312,10 +374,10 @@ const goToHome = () => {
   background: transparent;
 }
 .primary-btn {
-  width: 100%;
-  height: 100rpx;
-  border-radius: 50rpx;
-  background: linear-gradient(135deg, #FF9B8C, #FFB0A4);
+  width: 80%;
+  height: 90rpx;
+  border-radius: 45rpx;
+  background: linear-gradient(135deg, #98D8C8, #74C7B8);
   color: #FFF;
   font-size: 32rpx;
   font-weight: 600;
@@ -323,19 +385,60 @@ const goToHome = () => {
   display: flex;
   justify-content: center;
   align-items: center;
-  box-shadow: 0 12rpx 30rpx rgba(255, 176, 164, 0.35);
+  box-shadow: 0 8rpx 20rpx rgba(120, 200, 180, 0.25);
   border: none;
-  transition: transform 0.2s ease;
+  transition: all 0.3s ease;
+  margin: 0 auto;
 }
 .primary-btn::after {
   border: none;
+}
+.primary-btn:hover {
+  background: linear-gradient(135deg, #85C7B7, #61B6A6);
+  box-shadow: 0 10rpx 24rpx rgba(120, 200, 180, 0.35);
+  transform: translateY(-2rpx);
 }
 .primary-btn:active {
   transform: scale(0.97);
 }
 .skip-btn {
-  font-size: 26rpx;
-  color: #BDBDBD;
+  font-size: 28rpx;
+  color: #6B5B47;
   padding: 30rpx 20rpx 10rpx;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+.skip-btn:hover {
+  color: #5A4A37;
+  transform: translateY(-2rpx);
+}
+
+.secondary-btn {
+  width: 80%;
+  height: 90rpx;
+  border-radius: 45rpx;
+  background: #F5F5DC;
+  color: #6B5B47;
+  font-size: 32rpx;
+  font-weight: 600;
+  letter-spacing: 2rpx;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 8rpx 20rpx rgba(107, 91, 71, 0.15);
+  border: 2rpx solid rgba(107, 91, 71, 0.3);
+  transition: all 0.3s ease;
+  margin: 20rpx auto 0;
+}
+.secondary-btn::after {
+  border: none;
+}
+.secondary-btn:hover {
+  background: #C8E6D8;
+  box-shadow: 0 10rpx 24rpx rgba(120, 200, 180, 0.25);
+  transform: translateY(-2rpx);
+}
+.secondary-btn:active {
+  transform: scale(0.97);
 }
 </style>

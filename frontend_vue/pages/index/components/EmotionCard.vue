@@ -4,13 +4,13 @@
       <view class="emotion-title">现在的你，更接近哪种感觉？</view>
       <view class="emoji-list">
         <view class="emoji-item" v-for="(item, index) in emotionList" :key="index" @click="handleSelect(item)">
-          <image v-if="item.name === '崩溃'" src="/static/images/emotion-crash.png" class="emoji-image"></image>
-          <image v-else-if="item.name === '迷茫'" src="/static/images/emotion-confused.png" class="emoji-image"></image>
-          <image v-else-if="item.name === '低落'" src="/static/images/emotion-down.png" class="emoji-image"></image>
-          <image v-else-if="item.name === '平静'" src="/static/images/emotion-calm.png" class="emoji-image"></image>
-          <image v-else-if="item.name === '轻松'" src="/static/images/emotion-relaxed.png" class="emoji-image"></image>
-          <image v-else-if="item.name === '愉快'" src="/static/images/emotion-happy.png" class="emoji-image"></image>
-          <image v-else-if="item.name === '极好'" src="/static/images/emotion-excellent.png" class="emoji-image"></image>
+          <image v-if="item.name === '崩溃'" :src="emotionCrash" class="emoji-image"></image>
+          <image v-else-if="item.name === '迷茫'" :src="emotionConfused" class="emoji-image"></image>
+          <image v-else-if="item.name === '低落'" :src="emotionDown" class="emoji-image"></image>
+          <image v-else-if="item.name === '平静'" :src="emotionCalm" class="emoji-image"></image>
+          <image v-else-if="item.name === '轻松'" :src="emotionRelaxed" class="emoji-image"></image>
+          <image v-else-if="item.name === '愉快'" :src="emotionHappy" class="emoji-image"></image>
+          <image v-else-if="item.name === '极好'" :src="emotionExcellent" class="emoji-image"></image>
           <text v-else class="emoji-icon">{{ item.emoji }}</text>
         </view>
       </view>
@@ -18,13 +18,13 @@
     
     <view v-else class="selected-state fade-in">
       <view class="selected-header">
-        <image v-if="selectedEmotion.name === '崩溃'" src="/static/images/emotion-crash.png" class="large-emoji-image"></image>
-        <image v-else-if="selectedEmotion.name === '迷茫'" src="/static/images/emotion-confused.png" class="large-emoji-image"></image>
-        <image v-else-if="selectedEmotion.name === '低落'" src="/static/images/emotion-down.png" class="large-emoji-image"></image>
-        <image v-else-if="selectedEmotion.name === '平静'" src="/static/images/emotion-calm.png" class="large-emoji-image"></image>
-        <image v-else-if="selectedEmotion.name === '轻松'" src="/static/images/emotion-relaxed.png" class="large-emoji-image"></image>
-        <image v-else-if="selectedEmotion.name === '愉快'" src="/static/images/emotion-happy.png" class="large-emoji-image"></image>
-        <image v-else-if="selectedEmotion.name === '极好'" src="/static/images/emotion-excellent.png" class="large-emoji-image"></image>
+        <image v-if="selectedEmotion.name === '崩溃'" :src="emotionCrash" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '迷茫'" :src="emotionConfused" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '低落'" :src="emotionDown" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '平静'" :src="emotionCalm" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '轻松'" :src="emotionRelaxed" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '愉快'" :src="emotionHappy" class="large-emoji-image"></image>
+        <image v-else-if="selectedEmotion.name === '极好'" :src="emotionExcellent" class="large-emoji-image"></image>
         <text v-else class="large-emoji">{{ selectedEmotion.emoji }}</text>
         <text class="emotion-name">{{ selectedEmotion.name }}</text>
       </view>
@@ -40,6 +40,13 @@
 
 <script setup>
 import { ref } from 'vue'
+import emotionCrash from '@/static/images/emotion-crash.png'
+import emotionConfused from '@/static/images/emotion-confused.png'
+import emotionDown from '@/static/images/emotion-down.png'
+import emotionCalm from '@/static/images/emotion-calm.png'
+import emotionRelaxed from '@/static/images/emotion-relaxed.png'
+import emotionHappy from '@/static/images/emotion-happy.png'
+import emotionExcellent from '@/static/images/emotion-excellent.png'
 
 const emotionList = [
   { emoji: '😣', name: '崩溃', reply: '看到你这么难受，抱抱你，辛苦了' },
