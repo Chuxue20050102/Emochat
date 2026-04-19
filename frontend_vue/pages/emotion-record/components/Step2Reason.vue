@@ -7,6 +7,7 @@
         v-for="tag in reasonTags" 
         :key="tag"
         :class="{ 'selected': selectedReasons.includes(tag) }"
+        :style="selectedReasons.includes(tag) ? getSelectedStyle() : {}"
         @click="$emit('toggle', tag)"
       >
         {{ tag }}
@@ -16,11 +17,58 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   reasonTags: Array,
-  selectedReasons: Array
+  selectedReasons: Array,
+  selectedEmotion: Object
 })
 defineEmits(['toggle'])
+
+const getSelectedStyle = () => {
+  if (!props.selectedEmotion) return {}
+  
+  // 从情绪的 bgColor 中提取主要颜色作为选中状态的背景色
+  const bgColor = props.selectedEmotion.bgColor
+  // 从情绪的 glowColor 中提取颜色作为边框和阴影颜色
+  const glowColor = props.selectedEmotion.glowColor
+  
+  // 根据不同情绪设置更合适的字体颜色，确保显眼但不过亮
+  const emotionName = props.selectedEmotion.name
+  let fontColor = '#333' // 默认颜色
+  
+  switch (emotionName) {
+    case '崩溃':
+      fontColor = '#E06C5B' // 深粉色
+      break
+    case '迷茫':
+      fontColor = '#7B68EE' // 深紫色
+      break
+    case '低落':
+      fontColor = '#64748B' // 深灰色
+      break
+    case '平静':
+      fontColor = '#475569' // 深灰色
+      break
+    case '轻松':
+      fontColor = '#10B981' // 深绿色
+      break
+    case '愉快':
+      fontColor = '#F59E0B' // 深黄色
+      break
+    case '极好':
+      fontColor = '#EF4444' // 深红色
+      break
+  }
+  
+  return {
+    background: bgColor,
+    borderColor: glowColor,
+    color: fontColor,
+    boxShadow: `0 6rpx 20rpx ${glowColor.replace('0.6', '0.15')}`
+  }
+}
 </script>
 
 <style lang="scss" scoped>

@@ -39,7 +39,7 @@ onShow(() => {
 .home-page {
   min-height: 100vh;
   position: relative;
-  background-color: #FAFCFF;
+  background-color: #F5F5DC;
   padding: 140rpx 40rpx 60rpx;
   overflow: hidden;
   box-sizing: border-box;
@@ -47,17 +47,12 @@ onShow(() => {
   flex-direction: column;
 }
 
-/* 自然柔和的极光背景 */
+/* 米白色背景 */
 .hero-gradient {
   position: absolute;
   top: -10%; left: -10%; right: -10%; bottom: -10%;
   z-index: 0;
-  filter: blur(60px);
-  background: 
-    radial-gradient(circle at 15% 30%, rgba(135, 235, 205, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 85% 20%, rgba(255, 179, 167, 0.4) 0%, transparent 50%),
-    radial-gradient(circle at 30% 70%, rgba(214, 232, 246, 0.5) 0%, transparent 50%),
-    radial-gradient(circle at 75% 85%, rgba(255, 224, 142, 0.4) 0%, transparent 50%);
+  background: #F5F5DC;
   transform: scale(1.1);
   pointer-events: none;
 }
@@ -69,6 +64,18 @@ onShow(() => {
   flex-direction: column;
   gap: 40rpx;
   flex: 1;
+  padding: 0;
+}
+
+.module-card {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  border-radius: 40rpx;
+  padding: 50rpx 40rpx;
+  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.03);
+  border: 2rpx solid rgba(255, 255, 255, 0.7);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .ios-padding-bottom {
