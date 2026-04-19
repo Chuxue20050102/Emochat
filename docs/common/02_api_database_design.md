@@ -8,7 +8,7 @@
 
 #> **💡 提示：** .md文件，可以vscode快捷键Ctrl + Shift + V查看
 
-先用 **SQLite** 试试水（Python自带，不需要配置 MySQL 连接啥的，直接生成一个 `.db` 文件就能跑）。一共建三张很简单的表：
+先用 **SQLite** 试试水（Python自带，不需要配置 MySQL 连接啥的，直接生成一个 `.db` 文件就能跑）。一共建两张很简单的表：
 
 ### 1. 用户表 `users`
 存用户的基本信息和账号密码。
@@ -35,19 +35,7 @@
 | `description`| TEXT | 感悟随笔 | 详细文字内容 |
 | `record_date`| DATE | 签到日期 | 格式 `YYYY-MM-DD` |
 
-### 3. 聊天消息表 `chat_messages`
-存放人和 AI 的对话历史。
-
-| 字段名称 | 类型 | 说明 | 备注 |
-| :------- | :--- | :--- | :--- |
-| `id` | INTEGER | 消息ID | **主键** |
-| `user_id` | INTEGER | 用户ID | **外键** 关联 users.id (CASCADE) |
-| `role` | VARCHAR(10) | 角色 | `user` 或 `assistant` |
-| `content` | TEXT | 消息文字 | 对话内容 |
-| `card_record_id`| INTEGER| 关联记录ID | 可为空，关联对应的打卡卡片 |
-| `created_at` | DATETIME | 发送时间 | 自动生成 UTC 时间 |
-
-### 4. 问候语表 `greetings` (补充)
+### 3. 问候语表 `greetings`
 首页随机展示的句子。包含 `id`, `content`, `author` 三个字段。
 
 ---
@@ -144,7 +132,7 @@
     "card_record_id": 102 
   }
   ```
-- **后端干的事**: 调用通义千问 (Qwen-Plus) -> 存到数据库 -> 返回。
+- **后端干的事**: 调用通义千问 (Qwen-Plus) -> 存到 Redis 缓存 -> 返回。
 - **后端返回**:
   ```json
   {
@@ -156,8 +144,9 @@
   }
   ```
 
-#### 3.2 加载以前的聊天内容
+#### 3.2 加载以前的聊天内容（Redis缓存）
 - **GET** `/api/chat/history?user_id=1`
+- **说明**: 从 Redis 缓存中获取历史聊天记录，缓存有效期为7天。
 - **返回**: 列表形式的对话历史。
 
 #### 3.3 清空历史聊天记录

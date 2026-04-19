@@ -33,7 +33,7 @@ import ChatHeader from './components/ChatHeader.vue'
 import ChatMessageList from './components/ChatMessageList.vue'
 import ChatInputArea from './components/ChatInputArea.vue'
 
-import { sendChatApi } from '@/api/index.js'
+import { sendChatApi, getChatHistoryApi } from '@/api/index.js'
 
 const chatList = ref([
   { role: 'assistant', content: '今天想聊点什么，或者只是待一会也可以。' }
@@ -41,8 +41,20 @@ const chatList = ref([
 const isThinking = ref(false)
 const scrollTopId = ref('')
 
-onShow(() => {
+onShow(async () => {
   uni.hideTabBar({ animation: false })
+
+  // 获取历史聊天记录
+  try {
+    const userId = uni.getStorageSync('user_id') || 1001
+    const res = await getChatHistoryApi({ user_id: userId })
+    if (res && res.data && res.data.messages && res.data.messages.length > 0) {
+      chatList.value = res.data.messages
+      scrollToBottom()
+    }
+  } catch (error) {
+    console.error('获取历史记录失败', error)
+  }
 
   // 检查是否从情绪记录页的"和我聊聊这件事"跳过来
   const context = uni.getStorageSync('pendingChatContext')

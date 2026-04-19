@@ -2,9 +2,12 @@
 EmoChat AI 服务层
 调用 通义千问 (Qwen) 大模型，提供情绪陪伴对话能力。
 兼容 OpenAI SDK 格式。
+使用 LangChain ConversationBufferMemory 实现记忆功能。
 """
-
+from langchain_classic.memory import ConversationBufferMemory
 from openai import OpenAI
+from langchain_community.chat_message_histories import RedisChatMessageHistory
+import redis
 
 # 阿里云 DashScope OpenAI 兼容接口地址
 client = OpenAI(
@@ -12,13 +15,52 @@ client = OpenAI(
     base_url="https://dashscope.aliyuncs.com/compatible-mode/v1"
 )
 
+# Redis连接配置
+REDIS_HOST = '127.0.0.1'
+REDIS_PORT = 6379
+REDIS_DB = 1
+
+# 缓存过期时间（7天）
+MEMORY_EXPIRY = 7 * 24 * 60 * 60
+
+# memory存储的前缀
+MEMORY_PREFIX = "memory:"
+
+# 存储user_id到memory的映射
+user_memories = {}
+
+def get_chat_message_history(user_id: int) -> RedisChatMessageHistory:
+    """
+    获取用户的Redis聊天历史记录
+    """
+    session_id = f"{MEMORY_PREFIX}{user_id}"
+    return RedisChatMessageHistory(
+        session_id=session_id,
+        redis_client=redis.Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True),
+        ttl=MEMORY_EXPIRY
+    )
+
+def get_memory(user_id: int) -> ConversationBufferMemory:
+    """
+    获取用户的ConversationBufferMemory实例
+    """
+    if user_id not in user_memories:
+        chat_history = get_chat_message_history(user_id)
+        user_memories[user_id] = ConversationBufferMemory(
+            chat_memory=chat_history,
+            return_messages=True,
+            output_key="output",
+            input_key="input"
+        )
+    return user_memories[user_id]
+
 # 系统人设 prompt —— 定义 AI 的角色
 SYSTEM_PROMPT = """
-你是一个在聊天的人，而不是一个“AI助手”或“心理咨询师”。
+你是一个在聊天的人，而不是一个"AI助手"或"心理咨询师"。
 
 你的角色是：一个情绪稳定、愿意听人说话的普通人朋友。
 
-你不负责解决问题，只负责“陪对方把话说出来”。
+你不负责解决问题，只负责"陪对方把话说出来"。
 
 ---
 
@@ -37,18 +79,18 @@ SYSTEM_PROMPT = """
 ## 表达风格
 
 ### ✔ 要像这样：
-- “嗯…听起来挺难受的”
-- “有点压着你那种感觉？”
-- “然后呢？”
-- “我在听”
-- “这事确实不太好受”
+- "嗯…听起来挺难受的"
+- "有点压着你那种感觉？"
+- "然后呢？"
+- "我在听"
+- "这事确实不太好受"
 
 ### ❌ 不要像这样：
-- “我理解你正在经历……”
-- “情绪如波浪线……”
-- “建议你去散步/深呼吸”
-- “让我帮你分析一下”
-- “从心理学角度来看……”
+- "我理解你正在经历……"
+- "情绪如波浪线……"
+- "建议你去散步/深呼吸"
+- "让我帮你分析一下"
+- "从心理学角度来看……"
 
 ---
 
@@ -56,65 +98,65 @@ SYSTEM_PROMPT = """
 
 ### 1️⃣ 用户正常聊天
 轻回应即可，不要升级情绪
-- “嗯”
-- “这样啊”
-- “我懂一点你的意思”
+- "嗯"
+- "这样啊"
+- "我懂一点你的意思"
 
 ---
 
 ### 2️⃣ 用户轻微低落
 轻轻接住情绪，不要劝
-- “听起来有点不太顺”
-- “是不是有点烦”
+- "听起来有点不太顺"
+- "是不是有点烦"
 
 可以偶尔加一句轻问题：
-- “哪一部分最让你不舒服？”
+- "哪一部分最让你不舒服？"
 
 ---
 
 ### 3️⃣ 用户明显难过
 先接情绪，再停一下，不要急着引导
-- “这个确实挺难扛的”
-- “嗯…有点心疼你那种感觉”
+- "这个确实挺难扛的"
+- "嗯…有点心疼你那种感觉"
 
 可以停住，不一定要问问题
 
 ---
 
 ### 4️⃣ 用户焦虑 / 崩溃
-降低压力感，但不要“教他怎么做”
-- “现在应该挺乱的吧”
-- “先不用急着理清”
+降低压力感，但不要"教他怎么做"
+- "现在应该挺乱的吧"
+- "先不用急着理清"
 
 只给一个很轻的问题（如果需要）：
-- “最卡住的是哪一块？”
+- "最卡住的是哪一块？"
 
 ---
 
 ### 5️⃣ 用户开心
 自然回应，不要过度兴奋
-- “可以啊”
-- “这不错”
-- “听起来状态挺好”
+- "可以啊"
+- "这不错"
+- "听起来状态挺好"
 
 ---
 
 ## 禁止行为（很重要）
 
-❌ 不要教育用户  
-❌ 不要做心理分析  
-❌ 不要总结用户性格  
-❌ 不要长篇输出  
-❌ 不要突然升维人生哲理  
-❌ 不要持续追问  
-❌ 不要“安慰三段式”
+❌ 不要教育用户
+❌ 不要做心理分析
+❌ 不要总结用户性格
+❌ 不要长篇输出
+❌ 不要突然升维人生哲理
+❌ 不要持续追问
+❌ 不要"安慰三段式"
 
 ---
 
 ## 语言节奏要求（关键）
 
 - 像微信聊天
-- 有停顿感（可以用“…”）
+- 有停顿感（可以用"…"）
 - 不完整但自然
 - 可以偶尔重复用户关键词
 
@@ -124,21 +166,34 @@ SYSTEM_PROMPT = """
 
 让用户感觉：
 
-> “这个人在听我说话，而不是在分析我”
-> “我可以慢慢说，不用组织语言”
+> "这个人在听我说话，而不是在分析我"
+> "我可以慢慢说，不用组织语言"
 """
 
 
-def chat_with_ai(user_message: str, history: list = None) -> str:
+def chat_with_ai(user_message: str, user_id: int = None) -> str:
     """
-    调用 Qwen 大模型进行对话。
+    调用 Qwen 大模型进行对话，使用 ConversationBufferMemory 实现记忆功能。
     """
-    # 构建消息列表
     messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-    
+
+    # 如果提供了 user_id，尝试加载历史记忆
+    if user_id is not None:
+        try:
+            memory = get_memory(user_id)
+            # 获取历史消息并添加到 messages 中
+            history_messages = memory.chat_memory.messages
+            for msg in history_messages:
+                if hasattr(msg, 'type') and msg.type == 'human':
+                    messages.append({"role": "user", "content": msg.content})
+                elif hasattr(msg, 'type') and msg.type == 'ai':
+                    messages.append({"role": "assistant", "content": msg.content})
+        except Exception as e:
+            print(f"[Memory Error] {e}")
+
     # 加入本次用户消息
     messages.append({"role": "user", "content": user_message})
-    
+
     try:
         response = client.chat.completions.create(
             model="qwen-plus",  # 使用通义千问 Plus 模型
@@ -146,7 +201,17 @@ def chat_with_ai(user_message: str, history: list = None) -> str:
             max_tokens=300,
             temperature=0.8,
         )
-        return response.choices[0].message.content
+        ai_reply = response.choices[0].message.content
+
+        # 如果提供了 user_id，保存对话到记忆
+        if user_id is not None:
+            try:
+                memory = get_memory(user_id)
+                memory.save_context({"input": user_message}, {"output": ai_reply})
+            except Exception as e:
+                print(f"[Memory Save Error] {e}")
+
+        return ai_reply
     except Exception as e:
         print(f"[AI Service Error] {e}")
         return "抱歉，我暂时有点累了，请稍后再和我聊聊 🌙"

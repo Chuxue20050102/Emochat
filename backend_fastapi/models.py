@@ -23,16 +23,6 @@ class EmotionRecord(Base):
     description = Column(Text, nullable=True)
     record_date = Column(Date)
 
-class ChatMessage(Base):
-    __tablename__ = "chat_messages"
-
-    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey("users.id", ondelete="CASCADE"))
-    role = Column(String(10)) # user 或者 assistant
-    content = Column(Text)
-    card_record_id = Column(Integer, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
 class Greeting(Base):
     __tablename__ = "greetings"
 
