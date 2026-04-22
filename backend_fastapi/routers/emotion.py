@@ -1,5 +1,6 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
+from sqlalchemy import desc
 from datetime import date, datetime
 
 from database import get_db
@@ -25,13 +26,19 @@ def create_record(req: schemas.RecordRequest, db: Session = Depends(get_db)):
 
 @router.get("/calendar")
 def get_calendar(user_id: int, year: int, month: int, db: Session = Depends(get_db)):
-    records = db.query(models.EmotionRecord).filter(models.EmotionRecord.user_id == user_id).all()
+    records = (
+        db.query(models.EmotionRecord)
+        .filter(models.EmotionRecord.user_id == user_id)
+        .order_by(desc(models.EmotionRecord.record_date), desc(models.EmotionRecord.id))
+        .all()
+    )
     calendar_data = {}
     for r in records:
         if r.record_date and r.record_date.year == year and r.record_date.month == month:
             date_str = r.record_date.strftime("%Y-%m-%d")
             if date_str not in calendar_data:
-                calendar_data[date_str] = r.mood
+                calendar_data[date_str] = {"mood": r.mood, "count": 0}
+            calendar_data[date_str]["count"] += 1
     return success_resp(data=calendar_data)
 
 @router.get("/detail")
@@ -41,10 +48,15 @@ def get_emotion_detail(user_id: int, date_str: str, db: Session = Depends(get_db
     except ValueError:
         return error_resp(msg="日期格式必须为 YYYY-MM-DD")
         
-    records = db.query(models.EmotionRecord).filter(
-        models.EmotionRecord.user_id == user_id, 
-        models.EmotionRecord.record_date == target_date
-    ).all()
+    records = (
+        db.query(models.EmotionRecord)
+        .filter(
+            models.EmotionRecord.user_id == user_id,
+            models.EmotionRecord.record_date == target_date
+        )
+        .order_by(desc(models.EmotionRecord.id))
+        .all()
+    )
     
     if not records:
         return success_resp(data=[])
@@ -59,3 +71,42 @@ def get_emotion_detail(user_id: int, date_str: str, db: Session = Depends(get_db
         } for r in records
     ]
     return success_resp(data=res_data)
+
+
+@router.get("/history")
+def get_emotion_history(
+    user_id: int = Query(..., description="用户ID"),
+    page: int = Query(1, ge=1),
+    page_size: int = Query(20, ge=1, le=100),
+    mood: str = Query("", description="按情绪筛选，可选"),
+    db: Session = Depends(get_db),
+):
+    query = db.query(models.EmotionRecord).filter(models.EmotionRecord.user_id == user_id)
+    if mood:
+        query = query.filter(models.EmotionRecord.mood == mood)
+
+    total = query.count()
+    records = (
+        query.order_by(desc(models.EmotionRecord.record_date), desc(models.EmotionRecord.id))
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+        .all()
+    )
+
+    return success_resp(
+        data={
+            "total": total,
+            "page": page,
+            "page_size": page_size,
+            "records": [
+                {
+                    "id": r.id,
+                    "mood": r.mood,
+                    "tags": r.tags or "",
+                    "description": r.description or "",
+                    "record_date": str(r.record_date),
+                }
+                for r in records
+            ],
+        }
+    )

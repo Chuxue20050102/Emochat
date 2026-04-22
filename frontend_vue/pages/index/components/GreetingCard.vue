@@ -1,9 +1,8 @@
 <template>
-  <view class="module-card greeting-card">
-    <view class="greeting-emoji">☁️</view>
-    <view class="greeting-text-area">
-      <view class="greeting-title">今天也在慢慢变好</view>
-    </view>
+  <view class="greeting-card emo-fade-up">
+    <view class="halo"></view>
+    <view class="title">欢迎回来</view>
+    <view class="desc">今天的感受，也值得被认真对待</view>
   </view>
 </template>
 
@@ -11,36 +10,40 @@
 </script>
 
 <style lang="scss" scoped>
-.module-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  border-radius: 40rpx;
-  padding: 50rpx 40rpx;
-  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.03);
-  border: 2rpx solid rgba(255, 255, 255, 0.8);
-}
 .greeting-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 28rpx;
-  padding: 48rpx 40rpx;
-  background: rgba(255, 255, 255, 0.45); 
-  border-color: rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  padding: 34rpx 36rpx;
+  border-radius: 34rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2rpx solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 14rpx 40rpx rgba(45, 57, 93, 0.12);
 }
-.greeting-emoji {
-  font-size: 64rpx;
-  flex-shrink: 0;
+
+.halo {
+  position: absolute;
+  width: 360rpx;
+  height: 360rpx;
+  right: -120rpx;
+  top: -210rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 175, 167, 0.45) 0%, rgba(255, 175, 167, 0) 70%);
 }
-.greeting-text-area {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-}
-.greeting-title {
-  font-size: 38rpx;
+
+.title {
+  position: relative;
+  z-index: 1;
+  font-size: 42rpx;
   font-weight: 700;
-  color: #1A1A1A;
   letter-spacing: 1rpx;
+  color: #20283c;
+}
+
+.desc {
+  position: relative;
+  z-index: 1;
+  margin-top: 8rpx;
+  font-size: 27rpx;
+  color: #5e6881;
 }
 </style>

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Union
 from datetime import date
 
@@ -28,6 +28,13 @@ class ChatSendRequest(BaseModel):
     user_id: int
     message: str
     card_record_id: Optional[int] = None
+    use_memory: bool = True
+    emotion_context: Optional[dict] = None
+
+
+class ChatArchiveRequest(BaseModel):
+    user_id: int
+    max_messages: int = Field(default=30, ge=6, le=200)
 
 class GreetingSchema(BaseModel):
     id: int

@@ -1,13 +1,7 @@
-/**
- * 🔧 全局请求工具
- * 
- * MOCK_MODE = true  → 所有请求走本地假数据，不连后端（当前开发阶段）
- * MOCK_MODE = false → 正式连接后端 API
- */
-const BASE_URL = 'http://127.0.0.1:8000'
-const MOCK_MODE = false   // ← 后端跑通后改成 false 即可
+import config from '../config/index.js'
 
-// ============ 假数据仓库 ============
+const MOCK_MODE = false
+
 const MOCK_DATA = {
     'POST /api/auth/login': { user_id: 1001, nickname: '测试用户' },
     'POST /api/auth/register': { user_id: 1002, nickname: '新用户' },
@@ -22,7 +16,6 @@ const MOCK_DATA = {
 }
 
 export const request = (url, method = 'GET', data = {}) => {
-    // Mock 模式：直接返回假数据，0延迟
     if (MOCK_MODE) {
         const key = `${method} ${url.split('?')[0]}`
         const mockResult = MOCK_DATA[key]
@@ -30,10 +23,11 @@ export const request = (url, method = 'GET', data = {}) => {
         return Promise.resolve(mockResult !== undefined ? mockResult : {})
     }
 
-    // 正式模式：真实请求后端
+    const fullUrl = config.baseUrl + url
+
     return new Promise((resolve, reject) => {
         uni.request({
-            url: BASE_URL + url,
+            url: fullUrl,
             method,
             data,
             timeout: 60000,
@@ -46,12 +40,11 @@ export const request = (url, method = 'GET', data = {}) => {
                     resolve(responseData.data)
                 } else {
                     uni.showToast({ title: responseData.msg || '请求失败', icon: 'none' })
-                    // 业务报错（如密码错误、账号存在），抛出一个带有标识的错误
                     reject({ isBizError: true, msg: responseData.msg })
                 }
             },
             fail: (err) => {
-                uni.showToast({ title: '网络无法连接到本地服务器', icon: 'none' })
+                uni.showToast({ title: '网络无法连接到服务器', icon: 'none' })
                 reject({ isBizError: false, err })
             }
         })
@@ -61,3 +54,87 @@ export const request = (url, method = 'GET', data = {}) => {
 export const get = (url, data) => request(url, 'GET', data)
 export const post = (url, data) => request(url, 'POST', data)
 export const del = (url, data) => request(url, 'DELETE', data)
+
+export const postStream = async (url, data = {}, handlers = {}) => {
+    const fullUrl = config.baseUrl + url
+
+    if (typeof fetch !== 'function') {
+        throw new Error('stream_not_supported')
+    }
+
+    let response
+    try {
+        response = await fetch(fullUrl, {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(data),
+            signal: handlers.signal
+        })
+    } catch (error) {
+        if (error?.name === 'AbortError') {
+            throw new Error('stream_aborted')
+        }
+        throw error
+    }
+
+    if (!response.ok || !response.body || typeof response.body.getReader !== 'function') {
+        throw new Error('stream_not_supported')
+    }
+
+    const reader = response.body.getReader()
+    const decoder = new TextDecoder('utf-8')
+    let buffer = ''
+
+    while (true) {
+        let result
+        try {
+            result = await reader.read()
+        } catch (error) {
+            if (error?.name === 'AbortError') {
+                throw new Error('stream_aborted')
+            }
+            throw error
+        }
+
+        const { value, done } = result
+        if (done) break
+
+        buffer += decoder.decode(value, { stream: true })
+        const lines = buffer.split('\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+            const payload = line.trim()
+            if (!payload) continue
+            let parsed
+            try {
+                parsed = JSON.parse(payload)
+            } catch (error) {
+                continue
+            }
+
+            if (parsed.type === 'start' && handlers.onStart) {
+                handlers.onStart(parsed)
+            }
+            if (parsed.type === 'delta' && handlers.onDelta) {
+                handlers.onDelta(parsed.content || '', parsed)
+            }
+            if (parsed.type === 'end' && handlers.onEnd) {
+                handlers.onEnd(parsed)
+            }
+        }
+    }
+
+    if (buffer.trim()) {
+        try {
+            const parsed = JSON.parse(buffer.trim())
+            if (parsed.type === 'end' && handlers.onEnd) {
+                handlers.onEnd(parsed)
+            }
+        } catch (error) {
+            console.warn('stream tail parse failed', error)
+        }
+    }
+}

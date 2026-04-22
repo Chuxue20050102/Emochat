@@ -3,3 +3,7 @@ uvicorn
 sqlalchemy
 pydantic
 openai
+redis
+langchain
+langchain-community
+python-dotenv

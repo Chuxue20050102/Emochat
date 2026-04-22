@@ -1,24 +1,20 @@
 <template>
   <view>
-    <!-- 底部安全留白，避免内容被浮动导航栏遮挡 -->
-    <view class="ios-padding-bottom"></view>
-
-    <!-- 模拟真实 iOS 圆角浮动导航栏 -->
     <view class="floating-tabbar">
       <view class="tab-item" :class="{ active: currentTab === 'index' }" @click="switchTab('index')">
-        <text class="tab-icon">🏠</text>
+        <text class="tab-icon">Ho</text>
         <text class="tab-text">首页</text>
       </view>
       <view class="tab-item" :class="{ active: currentTab === 'record' }" @click="switchTab('record')">
-        <text class="tab-icon">📝</text>
+        <text class="tab-icon">Re</text>
         <text class="tab-text">记录</text>
       </view>
       <view class="tab-item" :class="{ active: currentTab === 'chat' }" @click="switchTab('chat')">
-        <text class="tab-icon">💬</text>
-        <text class="tab-text">AI 聊天</text>
+        <text class="tab-icon">AI</text>
+        <text class="tab-text">陪聊</text>
       </view>
       <view class="tab-item" :class="{ active: currentTab === 'profile' }" @click="switchTab('profile')">
-        <text class="tab-icon">👤</text>
+        <text class="tab-icon">Me</text>
         <text class="tab-text">档案</text>
       </view>
     </view>
@@ -26,82 +22,85 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue'
-
 const props = defineProps({
   currentTab: {
     type: String,
-    default: 'index'
-  }
+    default: 'index',
+  },
 })
 
 const switchTab = (tab) => {
   if (props.currentTab === tab) return
-  
+
   const pathMap = {
-    'index': '/pages/index/index',
-    'chat': '/pages/chat/index',
-    'record': '/pages/emotion-record/index',
-    'profile': '/pages/profile/index'
+    index: '/pages/index/index',
+    chat: '/pages/chat/index',
+    record: '/pages/emotion-record/index',
+    profile: '/pages/profile/index',
   }
-  
-  uni.switchTab({
-    url: pathMap[tab]
-  })
+
+  uni.switchTab({ url: pathMap[tab] })
 }
 </script>
 
 <style scoped>
-/* --- 自定义浮动底部导航栏 (iOS Rounded Floating TabBar) --- */
-.ios-padding-bottom {
-  height: 180rpx;
-  width: 100%;
-}
-
 .floating-tabbar {
   position: fixed;
-  bottom: 50rpx;
-  left: 40rpx;
-  right: 40rpx;
-  height: 120rpx;
-  background: rgba(255, 255, 255, 0.85); /* 毛玻璃主体 */
-  backdrop-filter: blur(30px);
-  border-radius: 60rpx; /* 超大圆柱体药丸边界 */
-  box-shadow: 0 16rpx 50rpx rgba(0, 0, 0, 0.06); /* 底部空间立体的弥散透光 */
+  left: 34rpx;
+  right: 34rpx;
+  bottom: 42rpx;
+  height: 118rpx;
+  padding: 0 14rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.78);
+  border: 2rpx solid rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(24rpx);
+  box-shadow: 0 18rpx 46rpx rgba(34, 41, 71, 0.16);
   display: flex;
-  justify-content: space-around;
   align-items: center;
+  justify-content: space-between;
   z-index: 999;
-  padding: 0 20rpx;
 }
+
 .tab-item {
+  width: 24%;
+  height: 90rpx;
+  border-radius: 999rpx;
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
-  gap: 8rpx;
-  padding: 10rpx 20rpx;
-  transition: transform 0.2s;
+  gap: 4rpx;
+  transition: all 0.24s ease;
 }
+
 .tab-item:active {
-  transform: scale(0.9);
+  transform: scale(0.96);
 }
+
 .tab-icon {
-  font-size: 42rpx;
-  opacity: 0.5;
-  filter: grayscale(1);
-  transition: all 0.3s;
+  font-size: 18rpx;
+  line-height: 1;
+  color: #7f889c;
+  letter-spacing: 0.5rpx;
 }
+
 .tab-text {
   font-size: 20rpx;
-  color: #999;
-  transition: all 0.3s;
+  color: #8a92a6;
 }
+
+.tab-item.active {
+  background: linear-gradient(130deg, rgba(141, 187, 255, 0.24), rgba(142, 222, 195, 0.28));
+}
+
 .tab-item.active .tab-icon {
-  opacity: 1;
-  filter: grayscale(0);
+  color: #2a3350;
+  font-weight: 700;
 }
+
 .tab-item.active .tab-text {
-  color: #1A1A1A;
+  color: #25304b;
   font-weight: 600;
 }
 </style>

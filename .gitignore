@@ -191,3 +191,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 >>>>>>> bfa4308b12d21726d1fa66a1a4a47da47fc8fc4c
+frontend_vue/node_modules/ 

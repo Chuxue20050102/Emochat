@@ -2,24 +2,24 @@
   <view class="page-content selection-page">
     <view class="header-section">
       <view class="skip-btn" @click="$emit('skip')">Skip</view>
-      <view class="title-main">开始之前<br>想了解一下你的需求</view>
-      <view class="subtitle-main">选择一个最接近你当前需求的方向</view>
+      <view class="title-main">开始前，先了解你的此刻需求</view>
+      <view class="subtitle-main">选择一条最接近你的方向</view>
     </view>
-    
+
     <view class="options-container">
-      <view class="option-card green-card" :class="{'selected': selectedNeed === 'record'}" @click="$emit('select', 'record')">
+      <view class="option-card green-card" :class="{ selected: selectedNeed === 'record' }" @click="$emit('select', 'record')">
         <view class="option-title">情绪整理</view>
-        <view class="option-desc">想记录和整理自己的情绪</view>
+        <view class="option-desc">把今天的状态记录下来</view>
       </view>
-      
-      <view class="option-card purple-card" :class="{'selected': selectedNeed === 'chat'}" @click="$emit('select', 'chat')">
-        <view class="option-title">放松与陪伴</view>
-        <view class="option-desc">希望有一个地方聊天和倾诉</view>
+
+      <view class="option-card peach-card" :class="{ selected: selectedNeed === 'chat' }" @click="$emit('select', 'chat')">
+        <view class="option-title">放松陪聊</view>
+        <view class="option-desc">想找个温柔的倾听者</view>
       </view>
-      
-      <view class="option-card blue-card" :class="{'selected': selectedNeed === 'understand'}" @click="$emit('select', 'understand')">
+
+      <view class="option-card blue-card" :class="{ selected: selectedNeed === 'understand' }" @click="$emit('select', 'understand')">
         <view class="option-title">了解自己</view>
-        <view class="option-desc">想更好地理解自己的内心</view>
+        <view class="option-desc">看到情绪背后的规律</view>
       </view>
     </view>
   </view>
@@ -27,7 +27,7 @@
 
 <script setup>
 defineProps({
-  selectedNeed: { type: String, default: 'record' }
+  selectedNeed: { type: String, default: 'record' },
 })
 defineEmits(['select', 'skip'])
 </script>
@@ -37,70 +37,77 @@ defineEmits(['select', 'skip'])
   height: 100%;
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  padding-top: 120rpx; 
+  padding-top: 90rpx;
 }
-.selection-page {
-  padding-top: 100rpx;
-}
+
 .header-section {
-  padding: 0 60rpx;
+  padding: 0 46rpx;
   position: relative;
 }
+
 .skip-btn {
   position: absolute;
   top: 0;
-  right: 60rpx;
-  font-size: 30rpx;
-  color: #999;
+  right: 46rpx;
+  font-size: 24rpx;
+  color: #8690a7;
 }
+
 .title-main {
-  font-size: 56rpx;
-  font-weight: 600;
-  color: #1A1A1A;
-  line-height: 1.4;
-  margin-top: 60rpx;
-  margin-bottom: 20rpx;
+  margin-top: 58rpx;
+  font-size: 48rpx;
+  font-weight: 700;
+  line-height: 1.28;
+  color: #1f2943;
 }
+
 .subtitle-main {
+  margin-top: 14rpx;
   font-size: 28rpx;
-  color: #666;
-  margin-bottom: 60rpx;
+  color: #5f6a85;
 }
+
 .options-container {
-  padding: 0 50rpx;
+  margin-top: 50rpx;
+  padding: 0 40rpx;
   display: flex;
   flex-direction: column;
-  gap: 30rpx;
+  gap: 20rpx;
 }
+
 .option-card {
-  height: 140rpx;
-  border-radius: 99rpx; 
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  border: 4rpx solid transparent;
-  transition: all 0.3s ease;
+  min-height: 130rpx;
+  border-radius: 28rpx;
+  border: 2rpx solid transparent;
+  padding: 28rpx 30rpx;
 }
+
 .option-title {
   font-size: 34rpx;
-  font-weight: 600;
-  color: #1A1A1A;
-  margin-bottom: 8rpx;
+  font-weight: 700;
+  color: #1f2840;
 }
+
 .option-desc {
+  margin-top: 6rpx;
   font-size: 24rpx;
-  color: #666;
+  color: #5e6780;
 }
-.green-card { background-color: #E2F5EE; }
-.purple-card { background-color: #EFE8FA; }
-.blue-card { background-color: #E2F0F9; }
+
+.green-card {
+  background: linear-gradient(130deg, rgba(144, 224, 196, 0.35), rgba(205, 244, 229, 0.8));
+}
+
+.peach-card {
+  background: linear-gradient(130deg, rgba(255, 177, 167, 0.34), rgba(255, 236, 220, 0.88));
+}
+
+.blue-card {
+  background: linear-gradient(130deg, rgba(152, 195, 255, 0.35), rgba(224, 239, 255, 0.9));
+}
 
 .option-card.selected {
-  border-color: #FFB3A7;
-  transform: scale(1.02);
-  box-shadow: 0 10rpx 30rpx rgba(255, 179, 167, 0.3);
+  border-color: rgba(55, 82, 133, 0.4);
+  box-shadow: 0 14rpx 30rpx rgba(42, 55, 90, 0.12);
 }
 </style>

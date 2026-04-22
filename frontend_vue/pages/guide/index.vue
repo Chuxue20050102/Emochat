@@ -1,122 +1,128 @@
 <template>
   <view class="guide-container">
     <swiper class="swiper" :current="currentIndex" @change="onSwiperChange" :indicator-dots="false" :autoplay="false">
-      <!-- 第1页: 情绪共鸣 -->
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page1-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">一个人坐着思考 / 夜晚窗边</view>
+          <view class="illustration-container">
+            <image src="../../static/images/thinking-by-window.jpg" mode="aspectFill" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">有时候<br>情绪很难表达</view>
-            <view class="subtitle">忙碌的生活中<br>很多感受来不及被认真看见</view>
+            <view class="title">每一种情绪都值得被看见</view>
+            <view class="subtitle">在快节奏里，给自己留一点慢下来的空间</view>
           </view>
         </view>
       </swiper-item>
 
-      <!-- 第2页: 解决方式 -->
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page2-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">日记本 / 情绪记录</view>
+          <view class="illustration-container">
+            <image src="../../static/images/journal-emotion-record.jpg.jpg" mode="aspectFill" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">记录<br>可以帮助整理情绪</view>
-            <view class="subtitle">把每天的感受记录下来<br>慢慢看见自己的变化</view>
+            <view class="title">记录，会让内心变清晰</view>
+            <view class="subtitle">写下今天，明天你会更懂自己</view>
           </view>
         </view>
       </swiper-item>
 
-      <!-- 第3页: 产品能力 -->
       <swiper-item>
         <view class="page-content">
           <view class="hero-gradient page3-bg"></view>
-          <view class="illustration-placeholder">
-            <view class="placeholder-text">聊天气泡 / 温暖的AI形象</view>
+          <view class="illustration-container">
+            <image src="../../static/images/ai-chat-conversation.jpg" mode="aspectFill" class="illustration-image"></image>
           </view>
           <view class="text-section">
-            <view class="title">当你想要倾听时<br>AI 可以陪你聊一聊</view>
-            <view class="subtitle">表达想法<br>也许会让心情轻松一点</view>
+            <view class="title">你想聊的时候，我都在</view>
+            <view class="subtitle">不评判，不催促，只是陪你慢慢说</view>
           </view>
         </view>
       </swiper-item>
 
-      <!-- 第4页: 用户需求选择 (核心) -->
       <swiper-item>
         <GuideSelection :selectedNeed="selectedNeed" @select="selectNeed" @skip="skipGuide" />
       </swiper-item>
 
-      <!-- 第5页: 动态结果页 -->
       <swiper-item>
         <GuideDynamic :dynamicContent="dynamicContent" />
       </swiper-item>
     </swiper>
 
-    <!-- 底部导航控制区 -->
     <view class="bottom-controls">
-      <!-- 分页指示器 (前4页显示) -->
       <view class="dots-container" v-if="currentIndex < 4">
-        <view class="dot" :class="{'active': currentIndex === 0}"></view>
-        <view class="dot" :class="{'active': currentIndex === 1}"></view>
-        <view class="dot" :class="{'active': currentIndex === 2}"></view>
-        <view class="dot" :class="{'active': currentIndex === 3}"></view>
-      </view>
-      <!-- 如果有更多组件要遮挡，可以保持这层级 -->
-      <view class="dots-container" v-else>
-        <view class="dot active"></view><view class="dot active"></view><view class="dot active"></view><view class="dot active"></view>
+        <view class="dot" :class="{ active: currentIndex === 0 }"></view>
+        <view class="dot" :class="{ active: currentIndex === 1 }"></view>
+        <view class="dot" :class="{ active: currentIndex === 2 }"></view>
+        <view class="dot" :class="{ active: currentIndex === 3 }"></view>
       </view>
 
-      <!-- 右侧/底部按钮 -->
-      <view class="action-btn" :class="{'full-width': currentIndex >= 3}" @click="handleNext">
+      <view class="action-btn" :class="{ 'full-width': currentIndex >= 3 }" @click="handleNext">
         <text class="btn-text">{{ buttonText }}</text>
-        <text class="arrow" v-if="currentIndex < 3">→</text>
+        <text class="arrow" v-if="currentIndex < 3">Go</text>
       </view>
     </view>
   </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import GuideSelection from './components/GuideSelection.vue'
+import { computed, ref } from 'vue'
 import GuideDynamic from './components/GuideDynamic.vue'
+import GuideSelection from './components/GuideSelection.vue'
 
 const currentIndex = ref(0)
-const selectedNeed = ref('record') // 默认选择
+const selectedNeed = ref('record')
 
 const dynamicContentMap = {
-  'record': {
-    hint: '今天想整理一下自己的情绪',
-    title: '开始记录你的情绪',
-    subtitle: '把今天的感受简单记录下来<br>慢慢看见自己的情绪变化',
-    illus: '插图: 在爱心板上写字',
-    btn: '开始记录 →',
-    path: '/pages/login/index'
+  record: {
+    hint: '你想整理今天的情绪',
+    title: '从记录开始',
+    subtitle: '把感受落在文字里，心会慢慢变稳',
+    description: '记录不是任务，而是和自己站在一起。',
+    image: '/static/images/record-emotion.jpg',
+    features: [
+      { icon: '01', text: '轻量记录，不打扰节奏' },
+      { icon: '02', text: '可视化趋势，看到变化' },
+      { icon: '03', text: '专属空间，安心表达' },
+    ],
+    btn: '开启记录',
+    path: '/pages/login/index',
   },
-  'chat': {
-    hint: '想找个地方聊聊天',
-    title: '找个地方聊聊天',
-    subtitle: '如果有想说的话<br>可以和 AI 慢慢聊一聊',
-    illus: '插图: 和小幽灵聊天喝咖啡',
-    btn: '进入聊天 →',
-    path: '/pages/login/index'
+  chat: {
+    hint: '你需要一个倾听者',
+    title: '和 AI 慢慢聊',
+    subtitle: '从一句“我有点累”开始也可以',
+    description: '当你不想解释太多，也可以被理解。',
+    image: '/static/images/ai-chat.jpg',
+    features: [
+      { icon: '01', text: '全天候可聊' },
+      { icon: '02', text: '连续上下文陪伴' },
+      { icon: '03', text: '温和、非评判' },
+    ],
+    btn: '进入陪聊',
+    path: '/pages/login/index',
   },
-  'understand': {
-    hint: '想更了解自己的情绪',
-    title: '慢慢了解自己的情绪',
-    subtitle: '通过记录和回顾<br>慢慢发现自己的情绪变化',
-    illus: '插图: 看情绪折线趋势图',
-    btn: '开始体验 →',
-    path: '/pages/login/index'
-  }
+  understand: {
+    hint: '你想更了解自己',
+    title: '看见情绪规律',
+    subtitle: '理解触发点，情绪会更可控',
+    description: '当你理解自己，很多焦虑会慢慢松开。',
+    image: '/static/images/emotion-exploration.jpg',
+    features: [
+      { icon: '01', text: '追踪心情波动' },
+      { icon: '02', text: '识别高频触发场景' },
+      { icon: '03', text: '建立自己的节奏' },
+    ],
+    btn: '开始探索',
+    path: '/pages/login/index',
+  },
 }
 
 const dynamicContent = computed(() => dynamicContentMap[selectedNeed.value])
 
 const buttonText = computed(() => {
   if (currentIndex.value < 3) return ''
-  if (currentIndex.value === 3) return '继续 →'
+  if (currentIndex.value === 3) return '继续'
   return dynamicContent.value.btn
 })
 
@@ -145,7 +151,6 @@ const skipGuide = () => {
 .guide-container {
   height: 100vh;
   width: 100vw;
-  background-color: #FFFFFF;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -162,149 +167,125 @@ const skipGuide = () => {
   flex-direction: column;
   position: relative;
   overflow: hidden;
-  padding-top: 120rpx; 
+  padding-top: 86rpx;
 }
 
-/* 渐变背景的基础配置 */
 .hero-gradient {
   position: absolute;
-  top: -150rpx;
-  left: -50rpx;
+  top: -120rpx;
+  left: -80rpx;
   width: 130%;
-  height: 800rpx;
-  filter: blur(50px);
+  height: 780rpx;
+  filter: blur(70rpx);
   z-index: 0;
   opacity: 0.85;
 }
 
-/* 每页不同的极光色调，贴合图示 */
 .page1-bg {
-  background: radial-gradient(circle at 30% 50%, #B4E6DB 0%, transparent 60%),
-              radial-gradient(circle at 70% 80%, #FFB6A3 0%, transparent 50%);
-}
-.page2-bg {
-  background: radial-gradient(circle at 20% 40%, #FFF3D6 0%, transparent 50%),
-              radial-gradient(circle at 80% 60%, #E6E8FA 0%, transparent 50%);
-}
-.page3-bg {
-  background: radial-gradient(circle at 30% 60%, #E8D6FC 0%, transparent 60%),
-              radial-gradient(circle at 70% 30%, #D6E8F6 0%, transparent 50%);
+  background: radial-gradient(circle at 26% 40%, rgba(141, 187, 255, 0.42) 0%, transparent 58%),
+    radial-gradient(circle at 76% 72%, rgba(255, 177, 165, 0.36) 0%, transparent 52%);
 }
 
-/* 插图占位符 */
-.illustration-placeholder {
+.page2-bg {
+  background: radial-gradient(circle at 20% 30%, rgba(142, 222, 195, 0.4) 0%, transparent 55%),
+    radial-gradient(circle at 74% 66%, rgba(255, 213, 167, 0.34) 0%, transparent 55%);
+}
+
+.page3-bg {
+  background: radial-gradient(circle at 24% 46%, rgba(210, 177, 255, 0.42) 0%, transparent 56%),
+    radial-gradient(circle at 80% 66%, rgba(154, 203, 255, 0.36) 0%, transparent 54%);
+}
+
+.illustration-container {
   position: relative;
   z-index: 1;
-  height: 500rpx;
-  margin: 40rpx 60rpx;
-  background-color: rgba(255,255,255,0.4);
-  border: 2rpx dashed #C7C7CC;
-  border-radius: 40rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.placeholder-text {
-  color: #888;
-  font-size: 28rpx;
+  height: 510rpx;
+  margin: 36rpx 40rpx 0;
+  border-radius: 38rpx;
+  overflow: hidden;
+  box-shadow: 0 24rpx 40rpx rgba(43, 56, 94, 0.16);
 }
 
-/* 底部文案区 */
+.illustration-image {
+  width: 100%;
+  height: 100%;
+}
+
 .text-section {
   position: relative;
   z-index: 1;
-  padding: 0 60rpx;
-  margin-top: auto;
-  margin-bottom: 220rpx; /* 为底部按钮留空间 */
+  padding: 42rpx 52rpx 0;
   text-align: center;
 }
+
 .title {
   font-size: 52rpx;
-  font-weight: 600;
-  color: #1A1A1A;
-  line-height: 1.4;
-  margin-bottom: 24rpx;
-}
-.subtitle {
-  font-size: 30rpx;
-  color: #666;
-  line-height: 1.6;
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1f2943;
 }
 
-/* --- 底部统控台 --- */
+.subtitle {
+  margin-top: 20rpx;
+  font-size: 30rpx;
+  line-height: 1.55;
+  color: #5f6a84;
+}
+
 .bottom-controls {
   position: absolute;
-  bottom: 0;
   left: 0;
-  width: 100%;
-  height: 200rpx;
-  padding: 0 60rpx;
-  box-sizing: border-box;
+  right: 0;
+  bottom: 0;
+  padding: 24rpx 44rpx 56rpx;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  pointer-events: none; /* 让事件穿透到内部按钮 */
 }
 
-/* 指示点 */
 .dots-container {
   display: flex;
-  gap: 12rpx;
-}
-.dot {
-  width: 16rpx;
-  height: 16rpx;
-  border-radius: 50%;
-  background-color: #E5E5EA;
-  transition: all 0.3s ease;
-}
-.dot.active {
-  background-color: #FF9B8C;
-  width: 36rpx;
-  border-radius: 8rpx; /* 拉长变成小胶囊 */
+  gap: 10rpx;
 }
 
-/* 操作按钮 */
+.dot {
+  width: 14rpx;
+  height: 14rpx;
+  border-radius: 999rpx;
+  background: rgba(153, 164, 188, 0.4);
+  transition: all 0.24s ease;
+}
+
+.dot.active {
+  width: 34rpx;
+  background: linear-gradient(120deg, #8fb8ff, #7fd7b9);
+}
+
 .action-btn {
-  pointer-events: auto; /* 恢复点击 */
   width: 120rpx;
   height: 120rpx;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF9B8C, #FFB0A4);
-  box-shadow: 0 10rpx 30rpx rgba(255, 155, 140, 0.4);
+  background: linear-gradient(130deg, #ff8e84 0%, #ffbd9f 100%);
+  box-shadow: 0 14rpx 28rpx rgba(255, 145, 133, 0.36);
   display: flex;
-  justify-content: center;
   align-items: center;
-  color: white;
-  transition: all 0.3s ease;
-}
-.action-btn:active {
-  transform: scale(0.95);
-}
-.arrow {
-  font-size: 48rpx;
-  font-weight: 300;
+  justify-content: center;
+  color: #fff;
 }
 
-/* 第4页、第5页变成大药丸长按钮 */
 .action-btn.full-width {
   width: 100%;
-  border-radius: 99rpx;
-  height: 110rpx;
-}
-.action-btn.full-width .btn-text {
-  font-size: 34rpx;
-  font-weight: 500;
-  letter-spacing: 2rpx;
+  height: 102rpx;
+  border-radius: 999rpx;
 }
 
-/* 防止最后两页的指示器被满宽按钮遮挡，将满宽按钮定位到下方 */
-.bottom-controls:has(.full-width) {
-  flex-direction: column;
-  justify-content: flex-end;
-  padding-bottom: 60rpx;
+.btn-text {
+  font-size: 30rpx;
+  font-weight: 600;
 }
-.bottom-controls:has(.full-width) .dots-container {
-  display: none; 
+
+.arrow {
+  font-size: 24rpx;
+  margin-left: 8rpx;
 }
 </style>

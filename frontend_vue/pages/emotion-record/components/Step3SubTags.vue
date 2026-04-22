@@ -1,15 +1,18 @@
-<template>
-  <view class="step-content scroll-y">
-    <view class="step-title">再细一点描述这种感觉：<br/><text class="sub-title-mark">(可选)</text></view>
-    <view class="step-context-pill" v-if="selectedEmotion">
-      针对：<text class="selected-emoji-pill">{{ selectedEmotion.emoji }} {{ selectedEmotion.name }}</text>
+﻿<template>
+  <view class="step-content">
+    <view class="step-title">
+      再细一点描述这种感受
+      <text class="sub-title-mark">（可选）</text>
     </view>
+
+    <view v-if="selectedEmotion" class="context-chip">当前心情：{{ selectedEmotion.emoji }} {{ selectedEmotion.name }}</view>
+
     <view class="tags-grid">
-      <view 
-        class="tag-item" 
-        v-for="tag in currentSubTags" 
+      <view
+        v-for="tag in currentSubTags"
         :key="tag"
-        :class="{ 'selected': selectedSubTags.includes(tag) }"
+        class="tag-item"
+        :class="{ selected: selectedSubTags.includes(tag) }"
         @click="$emit('toggle', tag)"
       >
         {{ tag }}
@@ -20,78 +23,73 @@
 
 <script setup>
 defineProps({
-  currentSubTags: Array,
-  selectedSubTags: Array,
-  selectedEmotion: Object
+  currentSubTags: {
+    type: Array,
+    default: () => [],
+  },
+  selectedSubTags: {
+    type: Array,
+    default: () => [],
+  },
+  selectedEmotion: {
+    type: Object,
+    default: null,
+  },
 })
+
 defineEmits(['toggle'])
 </script>
 
 <style lang="scss" scoped>
 .step-content {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  padding: 0 50rpx;
+  padding: 0 36rpx;
 }
-.scroll-y {
-  overflow-y: auto;
-}
+
 .step-title {
-  font-size: 40rpx;
-  line-height: 1.5;
-  font-weight: 600;
-  color: #1A1A1A;
-  margin-bottom: 50rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #25314a;
+  margin-bottom: 20rpx;
 }
+
 .sub-title-mark {
-  font-size: 26rpx;
-  color: #999;
-  font-weight: normal;
-  margin-left: 10rpx;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: #8090ad;
+  margin-left: 8rpx;
 }
-.step-context-pill {
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 40rpx;
+
+.context-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 10rpx 18rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.82);
+  color: #495a7b;
+  font-size: 24rpx;
+  margin-bottom: 20rpx;
+}
+
+.tags-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14rpx;
+}
+
+.tag-item {
+  height: 88rpx;
+  border-radius: 999rpx;
   display: flex;
   align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.86);
+  color: #3a4765;
+  font-size: 26rpx;
 }
-.selected-emoji-pill {
-  background: rgba(255, 255, 255, 0.7);
-  padding: 8rpx 24rpx;
-  border-radius: 40rpx;
-  margin-left: 10rpx;
-  font-weight: 500;
-  color: #1A1A1A;
-  box-shadow: 0 4rpx 10rpx rgba(0,0,0,0.02);
-}
-.tags-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24rpx;
-}
-.tag-item {
-  width: calc(50% - 12rpx);
-  padding: 26rpx 0;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 99rpx;
-  font-size: 30rpx;
-  color: #333;
-  transition: all 0.25s cubic-bezier(0.25, 1, 0.5, 1);
-  border: 2rpx solid transparent;
-  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.02);
-}
-.tag-item:active {
-  transform: scale(0.96);
-}
+
 .tag-item.selected {
-  background: #FFF2F0;
-  color: #E06C5B;
-  border-color: #FFB0A4;
-  font-weight: 500;
-  box-shadow: 0 6rpx 20rpx rgba(255, 155, 140, 0.15);
-  transform: scale(1.02);
+  background: linear-gradient(135deg, rgba(141, 187, 255, 0.27), rgba(142, 222, 195, 0.28));
+  color: #22314e;
+  font-weight: 600;
 }
 </style>

@@ -1,24 +1,27 @@
-<template>
-  <view class="module-card emotion-card">
+﻿<template>
+  <view class="emotion-card">
     <view v-if="!selectedEmotion" class="unselected-state">
-      <view class="emotion-title">现在的你，更接近哪种感觉？</view>
+      <view class="emotion-title">这一刻，你更接近哪一种心情？</view>
       <view class="emoji-list">
-        <view class="emoji-item" v-for="(item, index) in emotionList" :key="index" @click="handleSelect(item)">
+        <view v-for="item in emotionItems" :key="item.name" class="emoji-item" @click="handleSelect(item)">
           <text class="emoji-icon">{{ item.emoji }}</text>
+          <text class="emoji-label">{{ item.name }}</text>
         </view>
       </view>
     </view>
-    
-    <view v-else class="selected-state fade-in">
-      <view class="selected-header">
-        <text class="large-emoji">{{ selectedEmotion.emoji }}</text>
-        <text class="emotion-name">{{ selectedEmotion.name }}</text>
+
+    <view v-else class="selected-state emo-fade-up">
+      <view class="selected-top">
+        <view class="emoji-glow">{{ selectedEmotion.emoji }}</view>
+        <view class="selected-meta">
+          <text class="selected-name">{{ selectedEmotion.name }}</text>
+          <text class="selected-desc">谢谢你认真感受自己，我们把它温柔地记录下来。</text>
+        </view>
       </view>
-      <view class="emotion-reply">{{ selectedEmotion.reply }}</view>
-      
+
       <view class="action-buttons">
-        <button class="primary-btn" @click="goToRecord">记录这一刻 →</button>
-        <text class="cancel-text" @click="cancelSelection">先不记录</text>
+        <button class="emo-btn-primary primary-btn" @click="goToRecord">记录此刻</button>
+        <button class="emo-btn-ghost secondary-btn" @click="cancelSelection">重新选择</button>
       </view>
     </view>
   </view>
@@ -26,18 +29,10 @@
 
 <script setup>
 import { ref } from 'vue'
-
-const emotionList = [
-  { emoji: '😣', name: '崩溃', reply: '看到你这么难受，抱抱你，辛苦了' },
-  { emoji: '😕', name: '迷茫', reply: '心里有些乱乱的没关系，允许自己停下来' },
-  { emoji: '🙁', name: '低落', reply: '允许自己有一点不开心，这很正常' },
-  { emoji: '😐', name: '平静', reply: '平平静静的，也是一种很好的状态哦' },
-  { emoji: '🙂', name: '轻松', reply: '感觉还不错对吧，继续保持这个节奏' },
-  { emoji: '😊', name: '愉快', reply: '看到你有一点开心，真好' },
-  { emoji: '😄', name: '极好', reply: '心情大好！这一刻绝对值得被记录下来' }
-]
+import { emotionList } from '@/config/emotionConfig.js'
 
 const selectedEmotion = ref(null)
+const emotionItems = emotionList || []
 
 const handleSelect = (item) => {
   selectedEmotion.value = item
@@ -48,7 +43,6 @@ const cancelSelection = () => {
 }
 
 const goToRecord = () => {
-  // 将首页选中的情绪存入缓存，供情绪记录页读取
   if (selectedEmotion.value) {
     uni.setStorageSync('preSelectedEmotion', selectedEmotion.value.name)
   }
@@ -57,112 +51,103 @@ const goToRecord = () => {
 </script>
 
 <style lang="scss" scoped>
-.module-card {
-  background: rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(20px);
-  border-radius: 40rpx;
-  padding: 50rpx 40rpx;
-  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.03);
-  border: 2rpx solid rgba(255, 255, 255, 0.8);
-}
 .emotion-card {
-  min-height: 320rpx;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  padding: 28rpx;
+  border-radius: 34rpx;
+  background: rgba(255, 255, 255, 0.76);
+  border: 2rpx solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 18rpx 48rpx rgba(42, 56, 96, 0.12);
 }
-.unselected-state {
-  display: flex;
-  flex-direction: column;
-}
+
 .emotion-title {
-  font-size: 34rpx;
+  font-size: 31rpx;
   font-weight: 600;
-  color: #1A1A1A;
-  margin-bottom: 50rpx;
-  text-align: left;
+  color: #202a41;
+  margin-bottom: 20rpx;
 }
+
 .emoji-list {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12rpx;
 }
+
 .emoji-item {
-  transition: transform 0.2s;
-  padding: 10rpx;
+  border-radius: 20rpx;
+  background: rgba(247, 250, 255, 0.95);
+  border: 2rpx solid rgba(225, 233, 249, 0.95);
+  min-height: 106rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rpx;
 }
-.emoji-item:active {
-  transform: scale(1.3);
-}
+
 .emoji-icon {
-  font-size: 56rpx;
+  font-size: 34rpx;
+}
+
+.emoji-label {
+  font-size: 19rpx;
+  color: #68738c;
+  max-width: 92%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .selected-state {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
-}
-.fade-in {
-  animation: fadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(16rpx); }
-  to { opacity: 1; transform: translateY(0); }
+  gap: 24rpx;
 }
 
-.selected-header {
+.selected-top {
+  display: flex;
+  gap: 18rpx;
+  align-items: center;
+}
+
+.emoji-glow {
+  width: 106rpx;
+  height: 106rpx;
+  border-radius: 26rpx;
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-bottom: 20rpx;
+  justify-content: center;
+  font-size: 48rpx;
+  background: linear-gradient(135deg, rgba(255, 185, 178, 0.45), rgba(151, 197, 255, 0.42));
+  box-shadow: 0 10rpx 20rpx rgba(149, 169, 211, 0.2);
 }
-.large-emoji {
-  font-size: 64rpx;
+
+.selected-meta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
 }
-.emotion-name {
-  font-size: 40rpx;
-  font-weight: 600;
-  color: #1A1A1A;
+
+.selected-name {
+  font-size: 35rpx;
+  font-weight: 700;
+  color: #1d2438;
 }
-.emotion-reply {
-  font-size: 28rpx;
-  color: #666;
-  margin-bottom: 50rpx;
+
+.selected-desc {
+  font-size: 24rpx;
+  color: #62708a;
+  line-height: 1.45;
 }
+
 .action-buttons {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 16rpx;
+  gap: 12rpx;
+}
+
+.primary-btn,
+.secondary-btn {
   width: 100%;
-}
-.primary-btn {
-  width: 80%;
-  height: 96rpx;
-  border-radius: 48rpx;
-  background: linear-gradient(135deg, #FF9B8C, #FFB0A4);
-  color: #FFF;
-  font-size: 32rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 12rpx 30rpx rgba(255, 155, 140, 0.35);
-  border: none;
-  transition: transform 0.2s ease;
-}
-.primary-btn::after {
-  border: none;
-}
-.primary-btn:active {
-  transform: scale(0.97);
-}
-.cancel-text {
-  font-size: 26rpx;
-  color: #888;
-  padding: 16rpx 30rpx;
 }
 </style>

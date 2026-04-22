@@ -4,34 +4,62 @@
       <view class="tab-item" :class="{ active: currentTab === 'login' }" @click="switchTab('login')">登录</view>
       <view class="tab-item" :class="{ active: currentTab === 'register' }" @click="switchTab('register')">注册</view>
     </view>
-    
+
     <view class="form-content">
-      <view class="form-title" v-if="currentTab === 'login'">欢迎回来</view>
-      <view class="form-title" v-else>创建账号</view>
+      <view class="form-title">{{ currentTab === 'login' ? '欢迎回来' : '创建账号' }}</view>
 
       <view class="input-group">
-        <input class="emo-input" v-model="formData.account" placeholder-class="input-placeholder" placeholder="[ 手机号 / 邮箱 ]" />
+        <input
+          class="emo-input"
+          v-model="formData.account"
+          placeholder-class="input-placeholder"
+          placeholder="手机号 / 邮箱"
+          :adjust-position="false"
+          :cursor-spacing="120"
+          @focus="emit('focus')"
+          @blur="emit('blur')"
+        />
       </view>
 
       <view class="input-group">
-        <input class="emo-input" v-model="formData.password" placeholder-class="input-placeholder" placeholder="[ 密码 ]" password />
+        <input
+          class="emo-input"
+          v-model="formData.password"
+          placeholder-class="input-placeholder"
+          placeholder="密码"
+          password
+          :adjust-position="false"
+          :cursor-spacing="120"
+          @focus="emit('focus')"
+          @blur="emit('blur')"
+        />
       </view>
 
       <view class="input-group" v-if="currentTab === 'register'">
-        <input class="emo-input" v-model="formData.confirmPassword" placeholder-class="input-placeholder" placeholder="[ 确认密码 ]" password />
+        <input
+          class="emo-input"
+          v-model="formData.confirmPassword"
+          placeholder-class="input-placeholder"
+          placeholder="确认密码"
+          password
+          :adjust-position="false"
+          :cursor-spacing="120"
+          @focus="emit('focus')"
+          @blur="emit('blur')"
+        />
       </view>
 
-      <button class="primary-btn" @click="handleSubmit">
-        {{ currentTab === 'login' ? '登录' : '注册账号' }}
+      <button class="emo-btn-primary primary-btn" @click="handleSubmit">
+        {{ currentTab === 'login' ? '登录' : '创建账号' }}
       </button>
 
       <view class="form-footer" v-if="currentTab === 'login'">
-        <text class="footer-link" @click="switchTab('register')">注册账号</text>
+        <text class="footer-link" @click="switchTab('register')">快速注册</text>
         <text class="divider">|</text>
         <text class="footer-link">忘记密码</text>
       </view>
-      <view class="form-footer" v-if="currentTab === 'register'">
-        <text class="footer-link" @click="switchTab('login')">已有账号？返回登录</text>
+      <view class="form-footer" v-else>
+        <text class="footer-link" @click="switchTab('login')">已有账号，返回登录</text>
       </view>
     </view>
   </view>
@@ -43,7 +71,7 @@ import { ref } from 'vue'
 const currentTab = ref('login')
 const formData = ref({ account: '', password: '', confirmPassword: '' })
 
-const emit = defineEmits(['success'])
+const emit = defineEmits(['blur', 'focus', 'success'])
 
 const switchTab = (tab) => {
   currentTab.value = tab
@@ -55,11 +83,17 @@ const validateForm = () => {
   const password = formData.value.password
   const confirmPassword = formData.value.confirmPassword
 
-  if (!account) { uni.showToast({ title: '请输入账号', icon: 'none' }); return false }
-  if (!password) { uni.showToast({ title: '请输入密码', icon: 'none' }); return false }
-
+  if (!account) {
+    uni.showToast({ title: '请输入账号', icon: 'none' })
+    return false
+  }
+  if (!password) {
+    uni.showToast({ title: '请输入密码', icon: 'none' })
+    return false
+  }
   if (currentTab.value === 'register' && password !== confirmPassword) {
-    uni.showToast({ title: '两次输入密码不一致', icon: 'none' }); return false
+    uni.showToast({ title: '两次密码不一致', icon: 'none' })
+    return false
   }
   return true
 }
@@ -73,111 +107,90 @@ const handleSubmit = () => {
 <style lang="scss" scoped>
 .form-card {
   width: 630rpx;
-  background-color: #FFFFFF;
+  margin-top: 44rpx;
+  padding: 34rpx;
   border-radius: 36rpx;
-  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.04);
-  padding: 40rpx;
-  z-index: 1;
-  position: relative;
-  margin-top: 60rpx;
+  background: rgba(255, 255, 255, 0.78);
+  border: 2rpx solid rgba(255, 255, 255, 0.88);
+  box-shadow: 0 20rpx 56rpx rgba(43, 55, 93, 0.14);
+  backdrop-filter: blur(22rpx);
+  z-index: 2;
+  box-sizing: border-box;
 }
+
 .tab-header {
   display: flex;
-  justify-content: space-around;
-  margin-bottom: 50rpx;
-  border-bottom: 2rpx solid #F0F0F0;
+  margin-bottom: 34rpx;
+  padding: 8rpx;
+  border-radius: 999rpx;
+  background: rgba(243, 247, 255, 0.84);
 }
+
 .tab-item {
-  font-size: 32rpx;
-  color: #888;
-  font-weight: 400;
-  padding-bottom: 24rpx;
-  position: relative;
   flex: 1;
-  text-align: center;
-  transition: all 0.3s;
+  height: 62rpx;
+  border-radius: 999rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #6f7890;
+  transition: all 0.24s ease;
 }
+
 .tab-item.active {
-  color: #1A1A1A;
-  font-weight: 600;
+  color: #25314f;
+  font-weight: 700;
+  background: #fff;
+  box-shadow: 0 6rpx 16rpx rgba(62, 77, 120, 0.14);
 }
-.tab-item.active::after {
-  content: '';
-  position: absolute;
-  bottom: -2rpx;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 48rpx;
-  height: 6rpx;
-  background: linear-gradient(90deg, #FF9B8C, #FFB0A4);
-  border-radius: 4rpx;
-}
+
 .form-title {
-  font-size: 32rpx;
-  font-weight: 600;
-  color: #1A1A1A;
-  margin-bottom: 30rpx;
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #202a45;
+  margin-bottom: 22rpx;
 }
+
 .input-group {
-  margin-bottom: 30rpx;
+  margin-bottom: 18rpx;
 }
+
 .emo-input {
   width: 100%;
-  height: 90rpx;
-  border: 2rpx solid #EAEAEA;
-  border-radius: 16rpx;
-  padding: 0 30rpx;
-  font-size: 28rpx;
-  color: #1A1A1A;
+  height: 92rpx;
+  border-radius: 18rpx;
+  border: 2rpx solid #e0e6f3;
+  background: rgba(248, 250, 255, 0.94);
+  padding: 0 24rpx;
   box-sizing: border-box;
-  background-color: #FAFAFC;
-  transition: border-color 0.3s;
+  font-size: 28rpx;
+  color: #25304a;
 }
-.emo-input:focus {
-  border-color: #FF9B8C;
-  background-color: #FFFFFF;
-}
+
 :deep(.input-placeholder) {
-  color: #BDBDBD;
-  letter-spacing: 2rpx;
+  color: #98a2b8;
 }
+
 .primary-btn {
-  width: 100%;
-  height: 96rpx;
-  border-radius: 48rpx;
-  background: linear-gradient(135deg, #FF9B8C, #FFB0A4);
-  color: #FFF;
-  font-size: 32rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 50rpx;
-  box-shadow: 0 12rpx 30rpx rgba(255, 155, 140, 0.35);
-  border: none;
-  transition: transform 0.2s ease;
+  margin-top: 18rpx;
 }
-.primary-btn::after {
-  border: none;
-}
-.primary-btn:active {
-  transform: scale(0.97);
-}
+
 .form-footer {
+  margin-top: 20rpx;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 36rpx;
 }
+
 .footer-link {
-  font-size: 26rpx;
-  color: #666;
-  padding: 10rpx;
-}
-.divider {
-  margin: 0 16rpx;
-  color: #D8D8D8;
   font-size: 24rpx;
+  color: #667291;
+}
+
+.divider {
+  margin: 0 12rpx;
+  color: #b4bbcd;
+  font-size: 22rpx;
 }
 </style>
