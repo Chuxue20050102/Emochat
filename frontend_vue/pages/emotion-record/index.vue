@@ -1,174 +1,146 @@
-<template>
+﻿<template>
   <view class="record-page" :style="{ background: currentBgColor }">
-    <!-- 顶部进度条与导航 (前8步显示) -->
-    <view class="header" v-if="currentStep < 9">
-      <text class="back-btn" @click="handleBack">{{ currentStep === 1 ? '返回' : '返回' }}</text>
+    <view class="hero-gradient"></view>
+
+    <view class="header">
+      <text class="back-btn" @click="handleBack">返回</text>
       <view class="progress-box">
-        <text class="step-text">{{ currentStep }} <text class="step-total">/ 8</text></text>
+        <text class="step-text">{{ currentStep }} <text class="step-total">/ 5</text></text>
         <view class="progress-bar">
-          <view class="progress-inner" :style="{ width: (currentStep / 8) * 100 + '%' }"></view>
+          <view class="progress-inner" :style="{ width: `${(currentStep / 5) * 100}%` }"></view>
         </view>
       </view>
       <text class="placeholder-text"></text>
     </view>
 
-    <!-- 主体滑动卡片区域 -->
-    <view class="card-container" v-if="currentStep < 9">
-      <swiper class="swiper" :current="currentStep - 1" @change="onSwiperChange" :indicator-dots="false" :autoplay="false">
-        
-        <!-- Step 1: 心情选择 (感受) -->
-        <swiper-item>
-          <Step1Mood 
-            :emotionList="emotionList" 
-            :selectedEmotion="selectedEmotion" 
-            @select="selectEmotion" 
-          />
-        </swiper-item>
+    <view class="content-wrap">
+      <scroll-view class="step-stage" scroll-y="true" :show-scrollbar="false">
+        <Step1Mood
+          v-if="currentStep === 1"
+          :emotionList="emotionList"
+          :selectedEmotion="selectedEmotion"
+          @select="selectEmotion"
+        />
 
-        <!-- Step 2: 时间选择 -->
-        <swiper-item>
-          <Step1TimeSelector @select="onTimeSelect" />
-        </swiper-item>
+        <Step2Reason
+          v-else-if="currentStep === 2"
+          :reasonTags="allReasonTags"
+          :selectedReasons="selectedReasons"
+          @toggle="toggleReason"
+          @add-custom="addCustomReason"
+        />
 
-        <!-- Step 3: 原因标签 (理解) -->
-        <swiper-item>
-          <Step2Reason 
-            :reasonTags="reasonTags" 
-            :selectedReasons="selectedReasons" 
-            :selectedEmotion="selectedEmotion"
-            @toggle="toggleReason" 
-          />
-        </swiper-item>
+        <Step3SubTags
+          v-else-if="currentStep === 3"
+          :currentSubTags="currentSubTags"
+          :selectedSubTags="selectedSubTags"
+          :selectedEmotion="selectedEmotion"
+          @toggle="toggleSubTag"
+        />
 
-        <!-- Step 4: 情绪细化 (命名) -->
-        <swiper-item>
-          <Step3SubTags 
-            :currentSubTags="currentSubTags" 
-            :selectedSubTags="selectedSubTags" 
-            :selectedEmotion="selectedEmotion"
-            @toggle="toggleSubTag" 
-          />
-        </swiper-item>
+        <Step4FreeInput
+          v-else-if="currentStep === 4"
+          v-model="textContent"
+          :bottomOffset="stepInputOffset"
+          :cursorSpacing="Math.max(keyboardHeight, 120)"
+          @focus="handleTextFocus"
+          @blur="handleTextBlur"
+        />
 
-        <!-- Step 5: 情绪强度与环境 -->
-        <swiper-item>
-          <Step2Intensity @select="onIntensitySelect" />
-        </swiper-item>
+        <Step5Feedback
+          v-else
+          :summaryMood="selectedEmotion?.name"
+          :summaryReasons="selectedReasons.join('、')"
+          :summarySubTags="selectedSubTags.join('、')"
+          :saving="saving"
+          @save-and-chat="handleSaveAndChat"
+          @save-and-home="handleSaveAndHome"
+          @back="goPrevStep"
+        />
+      </scroll-view>
 
-        <!-- Step 6: 自由表达 (核心) -->
-        <swiper-item>
-          <Step4FreeInput v-model="textContent" />
-        </swiper-item>
-
-        <!-- Step 7: 完成反馈 -->
-        <swiper-item>
-          <Step5Feedback 
-            @goChat="goChatWithContext" 
-            @goHome="goToHome" 
-          />
-        </swiper-item>
-
-        <!-- Step 8: 历史记录预览 -->
-        <swiper-item>
-          <Step4History />
-        </swiper-item>
-      </swiper>
-
-      <!-- 底部控制按钮区 -->
-      <view class="footer-controls">
-        <template v-if="currentStep === 8">
-          <button class="primary-btn" @click="submitRecord">保存这一刻</button>
-        </template>
-        <template v-else-if="currentStep > 1">
-          <button class="primary-btn" @click="nextStep">下一步</button>
-          <button class="secondary-btn" @click="nextStep">跳过</button>
-        </template>
+      <view v-if="shouldShowFooter" class="footer-controls" :style="footerStyle">
+        <button class="emo-btn-primary full-btn" @click="nextStep">下一步</button>
+        <button class="emo-btn-ghost full-btn ghost-btn" @click="skipStep">跳过</button>
       </view>
     </view>
-
-
-    
-    <FloatingTabBar currentTab="record" />
   </view>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { onShow } from '@dcloudio/uni-app'
-import FloatingTabBar from '@/components/FloatingTabBar.vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
+import { onHide, onShow } from '@dcloudio/uni-app'
 
-// 导入拆分好的私有组件
+import { recordEmotionApi } from '@/api/index.js'
+import { emotionList, reasonTags } from '@/config/emotionConfig.js'
 import Step1Mood from './components/Step1Mood.vue'
 import Step2Reason from './components/Step2Reason.vue'
 import Step3SubTags from './components/Step3SubTags.vue'
 import Step4FreeInput from './components/Step4FreeInput.vue'
 import Step5Feedback from './components/Step5Feedback.vue'
-import Step1TimeSelector from './components/Step1TimeSelector.vue'
-import Step2Intensity from './components/Step2Intensity.vue'
-import Step3Environment from './components/Step3Environment.vue'
-import Step4History from './components/Step4History.vue'
-
-import { recordEmotionApi } from '@/api/index.js'
-import { emotionList, reasonTags } from '@/config/emotionConfig.js'
 
 const currentStep = ref(1)
 const selectedEmotion = ref(null)
 const selectedReasons = ref([])
 const selectedSubTags = ref([])
+const customReasonTags = ref([])
 const textContent = ref('')
-const selectedTime = ref({ date: 'today', time: 'morning' })
-const intensity = ref(5)
-const weather = ref('')
-const environment = ref('')
-
-// emotionList 和 reasonTags 已从 @/config/emotionConfig.js 导入
+const keyboardHeight = ref(0)
+const saving = ref(false)
+const isTextInputFocused = ref(false)
+let keyboardHeightHandler = null
 
 onShow(() => {
   uni.hideTabBar({ animation: false })
+  bindKeyboardHeightChange()
+  resetForm()
 
-  // 每次进入都重置所有状态，防止上次残留脏数据
+  const preSelected = uni.getStorageSync('preSelectedEmotion')
+  if (!preSelected) return
+
+  uni.removeStorageSync('preSelectedEmotion')
+  const match = emotionList.find((item) => item.name === preSelected)
+  if (!match) return
+
+  selectedEmotion.value = match
+  currentStep.value = 2
+})
+
+onHide(() => {
+  resetKeyboardState()
+})
+
+onBeforeUnmount(() => {
+  unbindKeyboardHeightChange()
+})
+
+const allReasonTags = computed(() => [...reasonTags, ...customReasonTags.value])
+const currentBgColor = computed(() => selectedEmotion.value?.bgColor || 'linear-gradient(180deg, #f8fbff 0%, #f3f6fd 100%)')
+const currentSubTags = computed(() => selectedEmotion.value?.subTags || [])
+const stepInputOffset = computed(() => (currentStep.value === 4 ? keyboardHeight.value : 0))
+const shouldShowFooter = computed(
+  () => currentStep.value < 5 && !(currentStep.value === 4 && (isTextInputFocused.value || keyboardHeight.value > 0))
+)
+const footerStyle = computed(() => ({
+  paddingBottom:
+    currentStep.value === 4
+      ? `${Math.max(24, keyboardHeight.value + 20)}px`
+      : 'calc(env(safe-area-inset-bottom) + 24rpx)',
+}))
+
+const resetForm = () => {
   currentStep.value = 1
   selectedEmotion.value = null
   selectedReasons.value = []
   selectedSubTags.value = []
+  customReasonTags.value = []
   textContent.value = ''
-  selectedTime.value = { date: 'today', time: 'morning' }
-  intensity.value = 5
-  weather.value = ''
-  environment.value = ''
-
-  // 检查是否从首页模块2带着预选情绪过来
-  const preSelected = uni.getStorageSync('preSelectedEmotion')
-  if (preSelected) {
-    uni.removeStorageSync('preSelectedEmotion') // 用完即删
-    const match = emotionList.find(e => e.name === preSelected)
-    if (match) {
-      selectedEmotion.value = match
-      // 自动跳到第2步（原因标签页）
-      setTimeout(() => {
-        currentStep.value = 2
-      }, 300)
-    }
-  }
-})
-
-const currentBgColor = computed(() => {
-  if (currentStep.value === 7) return '#F5F5DC' // 承接页使用米白色
-  if (selectedEmotion.value) return selectedEmotion.value.bgColor
-  return '#F5F5DC' // 初始使用米白色
-})
-
-const currentSubTags = computed(() => {
-  return selectedEmotion.value ? selectedEmotion.value.subTags : []
-})
+  saving.value = false
+}
 
 const selectEmotion = (item) => {
   selectedEmotion.value = item
-  // 清零后面的自选项，防止脏数据
   selectedSubTags.value = []
-  setTimeout(() => {
-    nextStep()
-  }, 400)
 }
 
 const toggleReason = (tag) => {
@@ -177,6 +149,18 @@ const toggleReason = (tag) => {
     selectedReasons.value.splice(index, 1)
   } else {
     selectedReasons.value.push(tag)
+  }
+}
+
+const addCustomReason = (tag) => {
+  const value = String(tag || '').trim()
+  if (!value) return
+
+  if (!customReasonTags.value.includes(value)) {
+    customReasonTags.value.push(value)
+  }
+  if (!selectedReasons.value.includes(value)) {
+    selectedReasons.value.push(value)
   }
 }
 
@@ -189,246 +173,239 @@ const toggleSubTag = (tag) => {
   }
 }
 
-const onSwiperChange = (e) => {
-  currentStep.value = e.detail.current + 1
-}
-
 const handleBack = () => {
-  // 如果不小心切到了最后一步则不让回退卡片布局
-  if (currentStep.value === 9) return
   if (currentStep.value > 1) {
     currentStep.value -= 1
-  } else {
-    uni.switchTab({ url: '/pages/index/index' })
+    return
   }
+  uni.switchTab({ url: '/pages/index/index' })
+}
+
+const goPrevStep = () => {
+  if (currentStep.value > 1) currentStep.value -= 1
 }
 
 const nextStep = () => {
   if (currentStep.value === 1 && !selectedEmotion.value) {
-    uni.showToast({ title: '请先选择一种感受', icon: 'none' })
+    uni.showToast({ title: '请先选择一个心情', icon: 'none' })
     return
   }
-  if (currentStep.value < 8) {
+  if (currentStep.value < 5) {
     currentStep.value += 1
   }
 }
 
-const onTimeSelect = (timeData) => {
-  selectedTime.value = timeData
-}
-
-const onIntensitySelect = (data) => {
-  intensity.value = data.intensity
-  weather.value = data.weather
-  environment.value = ''
-}
-
-const submitRecord = async () => {
-  uni.showLoading({ title: '记录中...' })
-  try {
-    const userId = uni.getStorageSync('user_id')
-    if (!userId) {
-      uni.showToast({ title: '请先登录', icon: 'none' })
-      return
-    }
-
-    const payload = {
-      user_id: userId,
-      mood: selectedEmotion.value.name,
-      tags: [...selectedReasons.value, ...selectedSubTags.value].join(','),
-      description: textContent.value
-    }
-
-    await recordEmotionApi(payload)
-    
-    // 成功后流转至 Step 7
-    currentStep.value = 7 
-  } catch(e) {
-    uni.showToast({ title: '保存失败，请检查网络或后端是否启动', icon: 'none' })
-  } finally {
-    uni.hideLoading()
+const skipStep = () => {
+  if (currentStep.value === 1) {
+    uni.showToast({ title: '第一步不能跳过', icon: 'none' })
+    return
+  }
+  if (currentStep.value < 5) {
+    currentStep.value += 1
   }
 }
 
-const goChatWithContext = () => {
+const toLocalDate = () => {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+const saveRecord = async () => {
+  if (saving.value) return false
+
+  const userId = uni.getStorageSync('user_id')
+  if (!userId) {
+    uni.showToast({ title: '请先登录', icon: 'none' })
+    return false
+  }
+
+  saving.value = true
+  uni.showLoading({ title: '保存中...' })
+
+  try {
+    const payload = {
+      user_id: userId,
+      mood: selectedEmotion.value?.name || '中性',
+      tags: [...selectedReasons.value, ...selectedSubTags.value].join(','),
+      description: textContent.value || '',
+      record_date: toLocalDate(),
+    }
+
+    await recordEmotionApi(payload)
+    return true
+  } catch (error) {
+    uni.showToast({ title: '保存失败，请稍后再试', icon: 'none' })
+    return false
+  } finally {
+    uni.hideLoading()
+    saving.value = false
+  }
+}
+
+const handleSaveAndChat = async () => {
+  const ok = await saveRecord()
+  if (!ok) return
+
   const recordData = {
     emotion: selectedEmotion.value?.name || '',
     tags: selectedReasons.value,
     detail: selectedSubTags.value,
-    content: textContent.value
+    content: textContent.value,
+    recordDate: toLocalDate(),
   }
+
   uni.setStorageSync('pendingChatContext', recordData)
+  uni.showToast({ title: '已保存，正在跳转 AI', icon: 'none' })
   uni.switchTab({ url: '/pages/chat/index' })
 }
 
-const goToHome = () => {
+const handleSaveAndHome = async () => {
+  const ok = await saveRecord()
+  if (!ok) return
+
+  uni.showToast({ title: '记录已保存', icon: 'none' })
   uni.switchTab({ url: '/pages/index/index' })
+}
+
+const handleTextFocus = () => {
+  isTextInputFocused.value = true
+}
+
+const handleTextBlur = () => {
+  isTextInputFocused.value = false
+}
+
+const bindKeyboardHeightChange = () => {
+  if (typeof uni.onKeyboardHeightChange !== 'function' || keyboardHeightHandler) return
+
+  keyboardHeightHandler = ({ height = 0 }) => {
+    keyboardHeight.value = height
+  }
+
+  uni.onKeyboardHeightChange(keyboardHeightHandler)
+}
+
+const unbindKeyboardHeightChange = () => {
+  if (typeof uni.offKeyboardHeightChange === 'function' && keyboardHeightHandler) {
+    uni.offKeyboardHeightChange(keyboardHeightHandler)
+  }
+  keyboardHeightHandler = null
+}
+
+const resetKeyboardState = () => {
+  keyboardHeight.value = 0
+  isTextInputFocused.value = false
 }
 </script>
 
 <style lang="scss" scoped>
 .record-page {
   height: 100vh;
-  transition: background 0.5s ease;
+  position: relative;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
-  background-color: #F5F5DC;
-  font-family: 'SimSun', serif;
-  color: #6B5B47;
-  font-weight: 500;
-  font-size: 28rpx;
+  overflow: hidden;
 }
 
-/* 顶部进度导航 */
+.hero-gradient {
+  position: absolute;
+  inset: -10%;
+  z-index: 0;
+  filter: blur(70rpx);
+  background:
+    radial-gradient(circle at 14% 20%, rgba(141, 187, 255, 0.22) 0%, transparent 36%),
+    radial-gradient(circle at 82% 22%, rgba(255, 174, 161, 0.23) 0%, transparent 34%),
+    radial-gradient(circle at 25% 84%, rgba(142, 222, 195, 0.2) 0%, transparent 34%);
+}
+
 .header {
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 120rpx 40rpx 40rpx;
+  padding: 104rpx 24rpx 14rpx;
 }
+
 .back-btn {
-  font-size: 30rpx;
-  color: #6B5B47;
-  width: 120rpx;
-  height: 64rpx;
+  width: 96rpx;
+  height: 58rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.66);
+  border: 2rpx solid rgba(255, 255, 255, 0.88);
+  color: #5f6b86;
+  font-size: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(245, 245, 220, 0.9));
-  border-radius: 32rpx;
-  border: 2rpx solid rgba(107, 91, 71, 0.3);
-  box-shadow: 0 4rpx 12rpx rgba(107, 91, 71, 0.15);
-  transition: all 0.3s ease;
-  font-weight: 600;
 }
-.back-btn:hover {
-  background: linear-gradient(135deg, #98D8C8, #74C7B8);
-  color: #FFF;
-  box-shadow: 0 6rpx 16rpx rgba(120, 200, 180, 0.3);
-  transform: translateY(-3rpx) scale(1.02);
-}
+
 .placeholder-text {
-  width: 80rpx;
+  width: 96rpx;
 }
+
 .progress-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12rpx;
+  gap: 8rpx;
 }
+
 .step-text {
-  font-size: 32rpx;
-  font-weight: 500;
-  color: #1A1A1A;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #24304e;
 }
+
 .step-total {
-  color: #999;
-  font-size: 28rpx;
-  margin-left: 4rpx;
+  color: #8f99b1;
+  font-size: 24rpx;
 }
+
 .progress-bar {
-  width: 160rpx;
+  width: 170rpx;
   height: 8rpx;
-  background-color: rgba(0,0,0,0.06);
-  border-radius: 4rpx;
-  overflow: hidden;
+  border-radius: 999rpx;
+  background: rgba(136, 149, 176, 0.22);
 }
+
 .progress-inner {
   height: 100%;
-  background: linear-gradient(90deg, #FF9B8C, #FFB0A4);
-  border-radius: 4rpx;
-  transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  border-radius: 999rpx;
+  background: linear-gradient(90deg, #8eb9ff, #82d9bb);
 }
 
-/* 主容器 */
-.card-container {
+.content-wrap {
+  position: relative;
+  z-index: 2;
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  padding-top: 40rpx;
-  overflow: hidden;
-}
-.swiper {
-  flex: 1;
-  height: 100%;
-  min-height: 600rpx;
 }
 
-/* 底部操作区控制 */
+.step-stage {
+  flex: 1;
+  min-height: 0;
+}
+
 .footer-controls {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20rpx 60rpx 180rpx; /* safe area for tabbar */
-  background: transparent;
-}
-.primary-btn {
-  width: 80%;
-  height: 90rpx;
-  border-radius: 45rpx;
-  background: linear-gradient(135deg, #98D8C8, #74C7B8);
-  color: #FFF;
-  font-size: 32rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 8rpx 20rpx rgba(120, 200, 180, 0.25);
-  border: none;
-  transition: all 0.3s ease;
-  margin: 0 auto;
-}
-.primary-btn::after {
-  border: none;
-}
-.primary-btn:hover {
-  background: linear-gradient(135deg, #85C7B7, #61B6A6);
-  box-shadow: 0 10rpx 24rpx rgba(120, 200, 180, 0.35);
-  transform: translateY(-2rpx);
-}
-.primary-btn:active {
-  transform: scale(0.97);
-}
-.skip-btn {
-  font-size: 28rpx;
-  color: #6B5B47;
-  padding: 30rpx 20rpx 10rpx;
-  transition: all 0.3s ease;
-  font-weight: 500;
-}
-.skip-btn:hover {
-  color: #5A4A37;
-  transform: translateY(-2rpx);
+  gap: 12rpx;
+  padding: 8rpx 30rpx calc(env(safe-area-inset-bottom) + 24rpx);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.22) 42%, rgba(255, 255, 255, 0.4) 100%);
 }
 
-.secondary-btn {
-  width: 80%;
-  height: 90rpx;
-  border-radius: 45rpx;
-  background: #F5F5DC;
-  color: #6B5B47;
-  font-size: 32rpx;
-  font-weight: 600;
-  letter-spacing: 2rpx;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 8rpx 20rpx rgba(107, 91, 71, 0.15);
-  border: 2rpx solid rgba(107, 91, 71, 0.3);
-  transition: all 0.3s ease;
-  margin: 20rpx auto 0;
+.full-btn {
+  width: 100%;
 }
-.secondary-btn::after {
-  border: none;
-}
-.secondary-btn:hover {
-  background: #C8E6D8;
-  box-shadow: 0 10rpx 24rpx rgba(120, 200, 180, 0.25);
-  transform: translateY(-2rpx);
-}
-.secondary-btn:active {
-  transform: scale(0.97);
+
+.ghost-btn {
+  color: #607290;
 }
 </style>

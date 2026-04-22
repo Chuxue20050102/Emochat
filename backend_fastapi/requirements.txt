@@ -6,3 +6,4 @@ openai
 redis
 langchain
 langchain-community
+python-dotenv

@@ -1,23 +1,14 @@
 <template>
   <view class="home-page">
-    <!-- 自然柔和的极光背景 -->
-    <view class="hero-gradient page-bg"></view>
+    <view class="hero-gradient"></view>
 
     <view class="content-wrapper">
-      <!-- 模块1: 今日问候 (不可点击) -->
       <GreetingCard />
-
-      <!-- 模块2: 情绪选择 (核心交互) -->
       <EmotionCard />
-
-      <!-- 模块3: AI情绪陪伴入口 (温柔陪伴方案) -->
       <ChatEntryCard />
-
-      <!-- 底部安全留白，避免被浮动导航栏遮挡 -->
       <view class="ios-padding-bottom"></view>
     </view>
 
-    <!-- 使用全局的浮动自定义导航栏 -->
     <FloatingTabBar currentTab="index" />
   </view>
 </template>
@@ -25,12 +16,11 @@
 <script setup>
 import { onShow } from '@dcloudio/uni-app'
 import FloatingTabBar from '@/components/FloatingTabBar.vue'
-import GreetingCard from './components/GreetingCard.vue'
-import EmotionCard from './components/EmotionCard.vue'
 import ChatEntryCard from './components/ChatEntryCard.vue'
+import EmotionCard from './components/EmotionCard.vue'
+import GreetingCard from './components/GreetingCard.vue'
 
 onShow(() => {
-  // 原生 tabBar 在各端情况不同，我们通过调用 hideTabBar 让视觉只留下自定义的浮动圆角栏
   uni.hideTabBar({ animation: false })
 })
 </script>
@@ -39,22 +29,23 @@ onShow(() => {
 .home-page {
   min-height: 100vh;
   position: relative;
-  background-color: #F5F5DC;
-  padding: 140rpx 40rpx 60rpx;
+  padding: 110rpx 30rpx 30rpx;
   overflow: hidden;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
 }
 
-/* 米白色背景 */
 .hero-gradient {
   position: absolute;
-  top: -10%; left: -10%; right: -10%; bottom: -10%;
+  top: -12%;
+  left: -10%;
+  right: -10%;
+  bottom: -10%;
   z-index: 0;
-  background: #F5F5DC;
-  transform: scale(1.1);
-  pointer-events: none;
+  filter: blur(80rpx);
+  background:
+    radial-gradient(circle at 14% 18%, rgba(141, 187, 255, 0.34) 0%, transparent 45%),
+    radial-gradient(circle at 84% 16%, rgba(255, 168, 158, 0.34) 0%, transparent 42%),
+    radial-gradient(circle at 24% 80%, rgba(132, 219, 194, 0.3) 0%, transparent 42%),
+    radial-gradient(circle at 75% 82%, rgba(208, 164, 255, 0.28) 0%, transparent 40%);
 }
 
 .content-wrapper {
@@ -62,23 +53,10 @@ onShow(() => {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 40rpx;
-  flex: 1;
-  padding: 0;
-}
-
-.module-card {
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(20px);
-  border-radius: 40rpx;
-  padding: 50rpx 40rpx;
-  box-shadow: 0 16rpx 40rpx rgba(0, 0, 0, 0.03);
-  border: 2rpx solid rgba(255, 255, 255, 0.7);
-  width: 100%;
-  box-sizing: border-box;
+  gap: 24rpx;
 }
 
 .ios-padding-bottom {
-  height: 200rpx; /* 安全留白 */
+  height: 190rpx;
 }
 </style>

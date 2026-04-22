@@ -1,7 +1,6 @@
-// api/request.js
-// 这是最简单的封装版本，给所有组员发请求用的
+import config from '../config/index.js'
 
-const BASE_URL = 'http://127.0.0.1:8000/api'
+const BASE_URL = config.baseUrl + config.apiPrefix
 
 export function request(options) {
     return new Promise((resolve, reject) => {
@@ -13,9 +12,8 @@ export function request(options) {
                 'content-type': 'application/json',
             },
             success: (res) => {
-                // 请求成功
                 if (res.data.code === 200) {
-                    resolve(res.data.data) // 直接把那层 data 剥出来给页面
+                    resolve(res.data.data)
                 } else {
                     uni.showToast({ title: res.data.msg || '请求错误', icon: 'none' })
                     reject(res.data.msg)

@@ -1,9 +1,8 @@
 <template>
-  <view class="module-card greeting-card">
-    <view class="greeting-emoji">🌱</view>
-    <view class="greeting-text-area">
-      <view class="greeting-title">慢慢来，你的情绪都能被看见</view>
-    </view>
+  <view class="greeting-card emo-fade-up">
+    <view class="halo"></view>
+    <view class="title">欢迎回来</view>
+    <view class="desc">今天的感受，也值得被认真对待</view>
   </view>
 </template>
 
@@ -11,46 +10,40 @@
 </script>
 
 <style lang="scss" scoped>
-
 .greeting-card {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 28rpx;
-  padding: 24rpx 40rpx;
-  background: rgba(255, 255, 255, 0.6); 
-  border-color: rgba(255, 255, 255, 0.7);
-  transition: all 0.3s ease;
-  min-height: 140rpx;
-  height: 140rpx;
+  position: relative;
+  overflow: hidden;
+  padding: 34rpx 36rpx;
+  border-radius: 34rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2rpx solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 14rpx 40rpx rgba(45, 57, 93, 0.12);
 }
-.greeting-card:hover {
-  transform: translateY(-4rpx);
-  box-shadow: 0 20rpx 48rpx rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.7);
-  border-color: rgba(255, 255, 255, 0.8);
+
+.halo {
+  position: absolute;
+  width: 360rpx;
+  height: 360rpx;
+  right: -120rpx;
+  top: -210rpx;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 175, 167, 0.45) 0%, rgba(255, 175, 167, 0) 70%);
 }
-.greeting-emoji {
-  font-size: 64rpx;
-  flex-shrink: 0;
-}
-.greeting-text-area {
-  display: flex;
-  flex-direction: column;
-  gap: 12rpx;
-  flex: 1;
-}
-.greeting-title {
+
+.title {
+  position: relative;
+  z-index: 1;
   font-size: 42rpx;
   font-weight: 700;
-  color: #5D4037;
-  letter-spacing: 3rpx;
-  text-align: center;
-  text-shadow: 1rpx 1rpx 3rpx rgba(0, 0, 0, 0.1);
-  font-family: 'SimSun', '宋体', serif;
-  line-height: 1.3;
-  padding: 10rpx 0;
-  transform: skew(-2deg);
-  width: 100%;
+  letter-spacing: 1rpx;
+  color: #20283c;
+}
+
+.desc {
+  position: relative;
+  z-index: 1;
+  margin-top: 8rpx;
+  font-size: 27rpx;
+  color: #5e6881;
 }
 </style>

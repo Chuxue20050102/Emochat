@@ -1,7 +1,7 @@
 <template>
   <view class="guest-section">
-    <button class="guest-btn" @click="$emit('guest')">先体验</button>
-    <view class="guest-hint">在未登录的情况下体验核心功能</view>
+    <button class="emo-btn-ghost guest-btn" @click="$emit('guest')">先体验看看</button>
+    <view class="guest-hint">不登录也可体验主要功能</view>
   </view>
 </template>
 
@@ -18,28 +18,16 @@ defineEmits(['guest'])
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 80rpx;
+  padding-top: 36rpx;
 }
+
 .guest-btn {
   width: 100%;
-  height: 90rpx;
-  border-radius: 45rpx;
-  background: linear-gradient(135deg, #FF9B8C, #FFB0A4);
-  color: #FFF;
-  font-size: 32rpx;
-  font-weight: 500;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  box-shadow: 0 10rpx 28rpx rgba(255, 155, 140, 0.4);
 }
-.guest-btn:active {
-  transform: scale(0.98);
-}
+
 .guest-hint {
-  font-size: 24rpx;
-  color: #999;
-  text-align: center;
-  margin-top: 24rpx;
+  margin-top: 14rpx;
+  font-size: 23rpx;
+  color: #7f8aa0;
 }
 </style>

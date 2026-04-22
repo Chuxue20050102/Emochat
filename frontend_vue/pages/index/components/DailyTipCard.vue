@@ -1,74 +1,57 @@
 <template>
-  <view class="module-card tip-card">
-    <view class="tip-header">
-      <view class="tip-icon">💡</view>
-      <view class="tip-title">今日情绪小贴士</view>
+  <view class="tip-card">
+    <view class="tip-head">
+      <text class="tip-tag">Daily Note</text>
+      <text class="tip-title">情绪小贴士</text>
     </view>
-    <view class="tip-content">{{ dailyTip }}</view>
+    <text class="tip-content">{{ dailyTip }}</text>
   </view>
 </template>
 
 <script setup>
 const tips = [
-  '深呼吸是缓解情绪的有效方法，试着慢慢吸气4秒，屏息2秒，再慢慢呼气6秒',
-  '写下你的感受可以帮助你理清思绪，试试每天花10分钟记录你的情绪',
-  '适当的运动可以释放内啡肽，改善心情，即使只是简单的散步也有帮助',
-  '给自己一个微笑，研究表明微笑可以减轻压力，改善情绪',
-  '与朋友或家人分享你的感受，倾诉也是一种有效的情绪管理方式',
-  '尝试冥想或正念练习，专注于当下可以帮助你缓解焦虑',
-  '充足的睡眠对情绪管理至关重要，尽量保持规律的作息时间',
-  '做一些你喜欢的事情，哪怕只是一小会儿，也能提升你的心情'
+  '先描述感受，再谈解决方法，心会更稳。',
+  '今天允许自己慢一点，情绪也需要呼吸。',
+  '当你说出“我现在很累”，其实已经在照顾自己。',
+  '记录一次真实感受，比假装没事更有力量。',
 ]
 
-const getRandomTip = () => {
-  const randomIndex = Math.floor(Math.random() * tips.length)
-  return tips[randomIndex]
-}
-
-const dailyTip = getRandomTip()
+const dailyTip = tips[Math.floor(Math.random() * tips.length)]
 </script>
 
 <style lang="scss" scoped>
 .tip-card {
-  padding: 46rpx 40rpx 36rpx;
-  background: rgba(255, 255, 255, 0.6);
-  border: 1rpx solid rgba(255, 255, 255, 0.7);
-  transition: all 0.3s ease;
-  text-align: center;
+  padding: 28rpx 30rpx;
+  border-radius: 30rpx;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2rpx solid rgba(255, 255, 255, 0.84);
+  box-shadow: 0 14rpx 36rpx rgba(42, 54, 88, 0.12);
 }
 
-.tip-card:hover {
-  transform: translateY(-4rpx);
-  box-shadow: 0 20rpx 48rpx rgba(0, 0, 0, 0.06);
-  background: rgba(255, 255, 255, 0.7);
-  border-color: rgba(255, 255, 255, 0.8);
-}
-
-.tip-header {
+.tip-head {
   display: flex;
   align-items: center;
-  gap: 16rpx;
-  margin-bottom: 20rpx;
-  justify-content: center;
+  gap: 12rpx;
+  margin-bottom: 12rpx;
 }
 
-.tip-icon {
-  font-size: 40rpx;
-  flex-shrink: 0;
+.tip-tag {
+  padding: 4rpx 12rpx;
+  border-radius: 999rpx;
+  background: rgba(141, 187, 255, 0.23);
+  color: #365a95;
+  font-size: 18rpx;
 }
 
 .tip-title {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 600;
-  color: #333;
+  color: #212b45;
 }
 
 .tip-content {
   font-size: 26rpx;
-  color: #666;
+  color: #61708a;
   line-height: 1.6;
-  white-space: pre-line;
-  text-align: center;
-  padding: 0 20rpx;
 }
 </style>

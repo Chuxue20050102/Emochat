@@ -1,92 +1,79 @@
 <script>
-	export default {
-		onLaunch: function() {
-			console.log('App Launch')
-		},
-		onShow: function() {
-			console.log('App Show')
-		},
-		onHide: function() {
-			console.log('App Hide')
-		}
-	}
+export default {
+  onLaunch() {
+    console.log('App Launch')
+  },
+  onShow() {
+    console.log('App Show')
+  },
+  onHide() {
+    console.log('App Hide')
+  },
+}
 </script>
 
 <style lang="scss">
-	/* 每个页面公共 CSS */
-	page {
-		/* 直接采用燕麦奶油白作为全局背景色 */
-		background-color: $emo-bg-base;
-		/* 统一个文字颜色，去纯黑 */
-		color: $emo-text-main;
-		/* 字体选用无衬线偏圆润体系 (由系统自动降级) */
-		font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
-	}
+page {
+  background:
+    radial-gradient(circle at 12% 14%, rgba(141, 187, 255, 0.22) 0%, transparent 36%),
+    radial-gradient(circle at 88% 20%, rgba(255, 159, 147, 0.22) 0%, transparent 34%),
+    radial-gradient(circle at 24% 82%, rgba(142, 222, 195, 0.18) 0%, transparent 35%),
+    radial-gradient(circle at 78% 86%, rgba(214, 168, 255, 0.2) 0%, transparent 33%),
+    $emo-bg-base;
+  color: $emo-text-main;
+  font-family: "Avenir Next", "SF Pro Display", "PingFang SC", "Source Han Sans SC", "Microsoft YaHei", sans-serif;
+}
 
-	/* 常用 Flex 布局工具类，方便组员写页面直接使用 */
-	.emo-flex-row {
-		display: flex;
-		flex-direction: row;
-		align-items: center;
-	}
+.emo-card {
+  background: $emo-bg-card;
+  border-radius: $emo-radius-base;
+  border: 2rpx solid $emo-border-soft;
+  box-shadow: $emo-shadow-soft;
+  backdrop-filter: blur(20rpx);
+}
 
-	.emo-flex-col {
-		display: flex;
-		flex-direction: column;
-	}
+.emo-btn-primary {
+  height: 92rpx;
+  border-radius: $emo-radius-pill;
+  border: none;
+  color: #fff;
+  font-size: 30rpx;
+  font-weight: 600;
+  background: linear-gradient(125deg, #ff8d82 0%, #ffb39c 48%, #ffd1ad 100%);
+  box-shadow: $emo-shadow-button;
+}
 
-	.emo-flex-center {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
+.emo-btn-primary::after {
+  border: none;
+}
 
-	/* 全局纸张卡片通用类 */
-	.emo-card {
-		background-color: $emo-bg-card;
-		border-radius: $emo-radius-base;
-		box-shadow: $emo-shadow-bubble;
-		padding: 30rpx;
-		margin-bottom: 24rpx;
-	}
+.emo-btn-ghost {
+  height: 88rpx;
+  border-radius: $emo-radius-pill;
+  border: 2rpx solid $emo-border-line;
+  color: $emo-text-sub;
+  font-size: 28rpx;
+  background: rgba(255, 255, 255, 0.62);
+}
 
-	/* 全局药丸主按钮 */
-	.emo-pill-btn {
-		height: 96rpx;
-		border-radius: 48rpx;
-		background: linear-gradient(135deg, #FF9B8C, #FFB0A4);
-		color: #FFF;
-		font-size: 32rpx;
-		font-weight: 600;
-		letter-spacing: 2rpx;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		box-shadow: 0 12rpx 30rpx rgba(255, 176, 164, 0.35);
-		border: none;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
-	}
-	.emo-pill-btn::after { border: none; }
-	.emo-pill-btn:active {
-		transform: scale(0.97);
-		box-shadow: 0 6rpx 16rpx rgba(255, 176, 164, 0.3);
-	}
+.emo-fade-up {
+  animation: emoFadeUp 0.48s cubic-bezier(0.19, 1, 0.22, 1) both;
+}
 
-	/* 全局统一入场动画 */
-	.emo-fade-in {
-		animation: emoFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-	}
-	@keyframes emoFadeIn {
-		from { opacity: 0; transform: translateY(16rpx); }
-		to { opacity: 1; transform: translateY(0); }
-	}
+@keyframes emoFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(18rpx) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
 
-	/* 隐藏滚动条 */
-	::-webkit-scrollbar {
-		display: none;
-		width: 0 !important;
-		height: 0 !important;
-		-webkit-appearance: none;
-		background: transparent;
-	}
+::-webkit-scrollbar {
+  display: none;
+  width: 0 !important;
+  height: 0 !important;
+}
 </style>
