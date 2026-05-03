@@ -1,7 +1,7 @@
-<template>
+﻿<template>
   <view class="guest-section">
     <button class="emo-btn-ghost guest-btn" @click="$emit('guest')">先体验看看</button>
-    <view class="guest-hint">不登录也可体验主要功能</view>
+    <view class="guest-hint">先体验一下，之后也可以再创建账号</view>
   </view>
 </template>
 

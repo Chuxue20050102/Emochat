@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(Get-ChildItem -Path \"c:\\\\HomeWork\\\\qingxu\\\\EmoChat\\\\backend_fastapi\" -Recurse -Directory -Filter \"__pycache__\")",
+      "Bash(Remove-Item -Recurse -Force)"
+    ]
+  }
+}

@@ -1,17 +1,19 @@
+﻿import os
+
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base, sessionmaker
 
-# 使用本地 SQLite 数据库文件
-SQLALCHEMY_DATABASE_URL = "sqlite:///./emochat.db"
+# 默认使用本地 SQLite 文件，也支持通过环境变量覆盖（便于 Docker）
+SQLALCHEMY_DATABASE_URL = os.getenv("EMOCHAT_DATABASE_URL", "sqlite:///./emochat.db")
 
-# connect_args={"check_same_thread": False} 是 SQLite 特有的配置，用于防止多线程错误
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
+# 仅在 SQLite 下需要 check_same_thread 配置
+connect_args = {"check_same_thread": False} if SQLALCHEMY_DATABASE_URL.startswith("sqlite") else {}
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args=connect_args)
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
+
 
 def get_db():
     db = SessionLocal()

@@ -1,4 +1,4 @@
-$uni-color-primary: #4f7cff;
+$uni-color-primary: #5c836f;
 $uni-color-success: #34c759;
 $uni-color-warning: #ff9f0a;
 $uni-color-error: #ff3b30;
@@ -9,9 +9,9 @@ $uni-text-color-grey: #7a8499;
 $uni-text-color-placeholder: #98a1b3;
 $uni-text-color-disable: #c2c8d6;
 
-$uni-bg-color: #f7f8fc;
-$uni-bg-color-grey: #f2f4f9;
-$uni-bg-color-hover: #edf1fa;
+$uni-bg-color: #f8f1e9;
+$uni-bg-color-grey: #f4eadf;
+$uni-bg-color-hover: #efe2d5;
 $uni-bg-color-mask: rgba(13, 18, 35, 0.35);
 $uni-border-color: #e3e8f4;
 
@@ -24,33 +24,41 @@ $uni-border-radius-base: 12px;
 $uni-border-radius-lg: 20px;
 $uni-border-radius-circle: 50%;
 
-$emo-bg-base: #f7f8fc;
-$emo-bg-card: rgba(255, 255, 255, 0.74);
+$emo-bg-base: #f8f1e9;
+$emo-bg-card: rgba(255, 255, 255, 0.68);
 $emo-bg-card-strong: #ffffff;
 
-$emo-color-primary: #8dbbff;
-$emo-color-secondary: #ff9f93;
-$emo-color-accent: #8edec3;
-$emo-color-warning: #ffd9ad;
+$emo-color-primary: #5c836f;
+$emo-color-secondary: #d9a27f;
+$emo-color-accent: #8fb8a0;
+$emo-color-warning: #f0c988;
 
-$emo-text-main: #181d29;
-$emo-text-sub: #677086;
-$emo-text-disabled: #a2a9bb;
+$emo-text-main: #2f2925;
+$emo-text-sub: #776a62;
+$emo-text-disabled: #a99a90;
 
 $emo-border-soft: rgba(255, 255, 255, 0.85);
-$emo-border-line: #dfe5f4;
+$emo-border-line: #e8dbcf;
 
 $emo-radius-sm: 12rpx;
 $emo-radius-base: 28rpx;
 $emo-radius-lg: 42rpx;
 $emo-radius-pill: 999rpx;
 
-$emo-shadow-soft: 0 20rpx 60rpx rgba(30, 38, 64, 0.08);
-$emo-shadow-card: 0 10rpx 36rpx rgba(49, 60, 97, 0.1);
-$emo-shadow-button: 0 14rpx 28rpx rgba(255, 159, 147, 0.35);
+$emo-shadow-soft: 0 20rpx 56rpx rgba(74, 54, 40, 0.08);
+$emo-shadow-card: 0 12rpx 34rpx rgba(74, 54, 40, 0.1);
+$emo-shadow-button: 0 14rpx 28rpx rgba(92, 131, 111, 0.24);
 
-$emo-chat-bg-tl: #d6e8ff;
-$emo-chat-bg-tr: #ffe4d1;
-$emo-chat-bg-bl: #d5f5e9;
-$emo-chat-bg-br: #f3ddff;
-$emo-chat-bg-center: #f6f8ff;
+$emo-chat-bg-tl: #ffe5ca;
+$emo-chat-bg-tr: #d8ecdd;
+$emo-chat-bg-bl: #f4ded2;
+$emo-chat-bg-br: #e9f3df;
+$emo-chat-bg-center: #fff8ef;
+
+$emo-page-bg: linear-gradient(180deg, #fff7ee 0%, #f7fbf6 48%, #f7efe8 100%);
+$emo-page-glow: radial-gradient(circle at 16% 12%, rgba(255, 207, 161, 0.34) 0%, transparent 44%),
+  radial-gradient(circle at 90% 18%, rgba(158, 214, 187, 0.32) 0%, transparent 42%),
+  radial-gradient(circle at 34% 88%, rgba(244, 210, 188, 0.28) 0%, transparent 50%);
+$emo-card-bg-soft: rgba(255, 255, 255, 0.68);
+$emo-card-border-soft: rgba(255, 255, 255, 0.86);
+$emo-sage-text: #365f4d;

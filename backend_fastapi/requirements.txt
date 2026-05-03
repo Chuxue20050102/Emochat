@@ -4,6 +4,10 @@ sqlalchemy
 pydantic
 openai
 redis
-langchain
+langchain-classic
 langchain-community
 python-dotenv
+pymysql
+passlib[bcrypt]
+pytest
+httpx
