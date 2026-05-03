@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <view class="form-card">
     <view class="tab-header">
       <view class="tab-item" :class="{ active: currentTab === 'login' }" @click="switchTab('login')">登录</view>
@@ -7,6 +7,21 @@
 
     <view class="form-content">
       <view class="form-title">{{ currentTab === 'login' ? '欢迎回来' : '创建账号' }}</view>
+      <view class="form-subtitle">{{ formSubtitle }}</view>
+
+      <view class="input-group" v-if="currentTab === 'register'">
+        <input
+          class="emo-input"
+          v-model="formData.nickname"
+          placeholder-class="input-placeholder"
+          placeholder="昵称"
+          :adjust-position="false"
+          :cursor-spacing="120"
+          maxlength="20"
+          @focus="emit('focus')"
+          @blur="emit('blur')"
+        />
+      </view>
 
       <view class="input-group">
         <input
@@ -66,23 +81,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const currentTab = ref('login')
-const formData = ref({ account: '', password: '', confirmPassword: '' })
+const formData = ref({ account: '', password: '', confirmPassword: '', nickname: '' })
+const formSubtitle = computed(() =>
+  currentTab.value === 'login'
+    ? '继续查看之前留下的记录和陪聊'
+    : '创建账号后，你的记录会保存在自己的档案里',
+)
 
 const emit = defineEmits(['blur', 'focus', 'success'])
 
 const switchTab = (tab) => {
   currentTab.value = tab
-  formData.value = { account: '', password: '', confirmPassword: '' }
+  formData.value = { account: '', password: '', confirmPassword: '', nickname: '' }
 }
 
 const validateForm = () => {
   const account = formData.value.account.trim()
+  const nickname = formData.value.nickname.trim()
   const password = formData.value.password
   const confirmPassword = formData.value.confirmPassword
 
+  if (currentTab.value === 'register' && !nickname) {
+    uni.showToast({ title: '请输入昵称', icon: 'none' })
+    return false
+  }
+  if (currentTab.value === 'register' && nickname.length > 20) {
+    uni.showToast({ title: '昵称不能超过20个字符', icon: 'none' })
+    return false
+  }
   if (!account) {
     uni.showToast({ title: '请输入账号', icon: 'none' })
     return false
@@ -149,7 +178,14 @@ const handleSubmit = () => {
   font-size: 34rpx;
   font-weight: 700;
   color: #202a45;
+}
+
+.form-subtitle {
+  margin-top: 8rpx;
   margin-bottom: 22rpx;
+  font-size: 23rpx;
+  line-height: 1.45;
+  color: #7f8aa0;
 }
 
 .input-group {

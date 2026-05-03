@@ -2,8 +2,8 @@
   <view class="feedback-page">
     <view class="feedback-card">
       <text class="feedback-icon">🍵</text>
-      <view class="feedback-title">这次情绪记录准备好了</view>
-      <view class="feedback-desc">你的记录会自动带上当天日期，并存入情绪档案。</view>
+      <view class="feedback-title">这条感受已经可以留下了</view>
+      <view class="feedback-desc">保存后会进入情绪档案。也可以带着它聊一会儿，把没说完的部分慢慢说清楚。</view>
 
       <view class="summary-box">
         <view class="summary-line">心情：{{ summaryMood || '未选择' }}</view>
@@ -13,10 +13,10 @@
 
       <view class="action-buttons">
         <button class="primary-btn action-btn" :disabled="saving" @click="$emit('save-and-chat')">
-          {{ saving ? '保存中...' : '保存并发送到 AI 陪聊' }}
+          {{ saving ? '保存中...' : '带着这条记录聊聊' }}
         </button>
         <button class="secondary-btn action-btn" :disabled="saving" @click="$emit('save-and-home')">
-          仅保存并返回首页
+          先保存起来
         </button>
         <view class="text-back" @click="$emit('back')">返回上一步修改</view>
       </view>
@@ -76,13 +76,13 @@ defineEmits(['save-and-chat', 'save-and-home', 'back'])
 .feedback-title {
   font-size: 36rpx;
   font-weight: 700;
-  color: #25324d;
+  color: $emo-text-main;
   margin-bottom: 10rpx;
 }
 
 .feedback-desc {
   font-size: 25rpx;
-  color: #5f6d89;
+  color: $emo-text-sub;
   margin-bottom: 24rpx;
   line-height: 1.6;
 }
@@ -90,8 +90,8 @@ defineEmits(['save-and-chat', 'save-and-home', 'back'])
 .summary-box {
   width: 100%;
   border-radius: 20rpx;
-  background: rgba(246, 250, 255, 0.88);
-  border: 1rpx solid rgba(218, 229, 245, 0.8);
+  background: rgba(255, 252, 247, 0.78);
+  border: 1rpx solid rgba(232, 219, 207, 0.8);
   padding: 18rpx 20rpx;
   margin-bottom: 24rpx;
   text-align: left;
@@ -99,7 +99,7 @@ defineEmits(['save-and-chat', 'save-and-home', 'back'])
 
 .summary-line {
   font-size: 24rpx;
-  color: #3a4968;
+  color: $emo-text-main;
   line-height: 1.7;
 }
 
@@ -117,7 +117,7 @@ defineEmits(['save-and-chat', 'save-and-home', 'back'])
 .primary-btn {
   height: 92rpx;
   border-radius: 46rpx;
-  background: linear-gradient(135deg, #8eb9ff, #82d9bb);
+  background: linear-gradient(135deg, #5c836f, #3f6d59);
   color: #fff;
   font-size: 29rpx;
   font-weight: 600;
@@ -127,14 +127,14 @@ defineEmits(['save-and-chat', 'save-and-home', 'back'])
   height: 90rpx;
   border-radius: 45rpx;
   background: rgba(255, 255, 255, 0.86);
-  color: #526283;
-  border: 1rpx solid rgba(209, 221, 240, 0.8);
+  color: $emo-sage-text;
+  border: 1rpx solid rgba(232, 219, 207, 0.8);
   font-size: 27rpx;
 }
 
 .text-back {
   margin-top: 6rpx;
   font-size: 24rpx;
-  color: #7c8aa7;
+  color: $emo-text-sub;
 }
 </style>

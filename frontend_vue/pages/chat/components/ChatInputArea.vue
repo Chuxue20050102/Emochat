@@ -1,22 +1,32 @@
 <template>
   <view class="input-area" :style="areaStyle">
-    <view class="input-wrapper">
-      <input
-        class="chat-input"
-        v-model="localText"
-        :placeholder="isStreaming ? 'AI 正在回复...' : placeholder"
-        :disabled="disabled"
-        :adjust-position="false"
-        :cursor-spacing="cursorSpacing"
-        confirm-type="send"
-        maxlength="300"
-        @confirm="handleSend"
-        @focus="handleFocus"
-        @blur="handleBlur"
-      />
-      <view class="counter">{{ localText.length }}/300</view>
-      <view class="send-btn" :class="buttonClass" @click="handleButtonClick">
-        {{ buttonText }}
+    <view class="input-panel">
+      <view v-if="showArchiveAction" class="tool-row">
+        <text class="tool-hint">如果这段对你重要，可以轻轻留下来</text>
+        <view class="tool-action" :class="{ disabled: archiveDisabled }" @click="handleArchive">
+          {{ archiveDisabled ? '正在留下' : '把这段留下来' }}
+        </view>
+      </view>
+
+      <view class="input-wrapper">
+        <textarea
+          class="chat-input"
+          v-model="localText"
+          :placeholder="isStreaming ? '我正在认真回应...' : placeholder"
+          :disabled="disabled"
+          auto-height
+          :adjust-position="false"
+          :cursor-spacing="cursorSpacing"
+          :show-confirm-bar="false"
+          :disable-default-padding="true"
+          maxlength="300"
+          @focus="handleFocus"
+          @blur="handleBlur"
+        />
+        <view v-if="showCounter" class="counter">{{ localText.length }}/300</view>
+        <view class="send-btn" :class="buttonClass" @click="handleButtonClick">
+          {{ buttonText }}
+        </view>
       </view>
     </view>
   </view>
@@ -26,6 +36,10 @@
 import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
+  archiveDisabled: {
+    type: Boolean,
+    default: false,
+  },
   bottomOffset: {
     type: Number,
     default: 0,
@@ -44,15 +58,20 @@ const props = defineProps({
   },
   placeholder: {
     type: String,
-    default: '有什么想说的，慢慢讲给我听',
+    default: '说说此刻的想法',
+  },
+  showArchiveAction: {
+    type: Boolean,
+    default: false,
   },
 })
 
-const emit = defineEmits(['blur', 'focus', 'send', 'stop'])
+const emit = defineEmits(['archive', 'blur', 'focus', 'send', 'stop'])
 const localText = ref('')
 
 const canSend = computed(() => !props.disabled && localText.value.trim().length > 0)
-const buttonText = computed(() => (props.isStreaming ? '停止' : '发送'))
+const showCounter = computed(() => localText.value.length >= 240)
+const buttonText = computed(() => (props.isStreaming ? '停' : '说'))
 const buttonClass = computed(() => ({
   'is-active': canSend.value,
   'is-stop': props.isStreaming,
@@ -61,10 +80,13 @@ const areaStyle = computed(() => ({
   transform: props.bottomOffset > 0 ? `translateY(-${props.bottomOffset}px)` : 'translateY(0)',
 }))
 
+const handleArchive = () => {
+  if (props.archiveDisabled) return
+  emit('archive')
+}
+
 const handleSend = () => {
-  if (!canSend.value) {
-    return
-  }
+  if (!canSend.value) return
   const text = localText.value.trim()
   emit('send', text)
   localText.value = ''
@@ -100,57 +122,107 @@ watch(
 .input-area {
   position: relative;
   z-index: 2;
-  padding: 10rpx 20rpx 14rpx;
-  background: rgba(255, 255, 255, 0.68);
-  backdrop-filter: blur(20px);
-  border-top: 1rpx solid rgba(255, 255, 255, 0.5);
+  padding: 8rpx 20rpx calc(env(safe-area-inset-bottom) + 16rpx);
+  background:
+    linear-gradient(180deg, rgba(247, 239, 232, 0), rgba(247, 239, 232, 0.88) 28%, #f7efe8 100%);
   transition: transform 0.22s ease;
 }
 
+.input-panel {
+  padding: 10rpx;
+  border-radius: 34rpx;
+  background: rgba(255, 255, 255, 0.58);
+  border: 1rpx solid rgba(255, 255, 255, 0.82);
+  box-shadow: 0 24rpx 52rpx rgba(69, 50, 38, 0.12);
+  backdrop-filter: blur(24rpx);
+}
+
+.tool-row {
+  min-height: 46rpx;
+  padding: 0 8rpx 8rpx 12rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 14rpx;
+}
+
+.tool-hint {
+  min-width: 0;
+  font-size: 20rpx;
+  color: #8a766a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-action {
+  flex-shrink: 0;
+  padding: 7rpx 14rpx;
+  border-radius: 999rpx;
+  font-size: 20rpx;
+  font-weight: 700;
+  color: #365f4d;
+  background: rgba(237, 250, 243, 0.9);
+  border: 1rpx solid rgba(183, 226, 203, 0.82);
+}
+
+.tool-action.disabled {
+  opacity: 0.5;
+}
+
 .input-wrapper {
+  min-height: 82rpx;
   display: flex;
   align-items: center;
   gap: 12rpx;
-  background-color: #fff;
-  border-radius: 999rpx;
-  padding: 8rpx 10rpx 8rpx 22rpx;
-  box-shadow: 0 4rpx 20rpx rgba(41, 41, 72, 0.08);
+  background: rgba(255, 255, 255, 0.94);
+  border: 1rpx solid rgba(230, 219, 208, 0.8);
+  border-radius: 26rpx;
+  padding: 8rpx 10rpx 8rpx 24rpx;
 }
 
 .chat-input {
   flex: 1;
-  height: 72rpx;
-  font-size: 30rpx;
-  color: #2e3443;
+  min-height: 68rpx;
+  max-height: 220rpx;
+  padding: 14rpx 0;
+  font-size: 28rpx;
+  line-height: 40rpx;
+  color: #2f2925;
+  overflow-y: auto;
 }
 
 .counter {
-  font-size: 20rpx;
-  color: #8b91a0;
-  min-width: 76rpx;
+  margin-bottom: 18rpx;
+  font-size: 19rpx;
+  color: #a4958b;
+  min-width: 72rpx;
   text-align: right;
 }
 
 .send-btn {
-  padding: 0 36rpx;
-  height: 72rpx;
-  line-height: 72rpx;
-  border-radius: 999rpx;
-  font-size: 28rpx;
-  font-weight: 600;
-  color: #8b91a0;
-  background-color: #edf0f6;
+  flex-shrink: 0;
+  width: 66rpx;
+  height: 66rpx;
+  border-radius: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24rpx;
+  font-weight: 800;
+  color: #a4958b;
+  background-color: #f5eee6;
 }
 
 .send-btn.is-active {
-  color: #fff;
-  background: linear-gradient(135deg, #ffb7a0 0%, #ff8a8a 100%);
-  box-shadow: 0 8rpx 16rpx rgba(255, 138, 138, 0.35);
+  color: #ffffff;
+  background: linear-gradient(135deg, #4f7665 0%, #2f5d50 100%);
+  box-shadow: 0 12rpx 26rpx rgba(47, 93, 80, 0.25);
 }
 
 .send-btn.is-stop {
-  color: #fff;
-  background: linear-gradient(135deg, #8ab9ff 0%, #5e87ff 100%);
-  box-shadow: 0 8rpx 16rpx rgba(94, 135, 255, 0.25);
+  color: #ffffff;
+  background: linear-gradient(135deg, #c08a63 0%, #9e6749 100%);
+  box-shadow: 0 12rpx 26rpx rgba(158, 103, 73, 0.22);
 }
 </style>

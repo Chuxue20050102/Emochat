@@ -19,7 +19,6 @@ export const request = (url, method = 'GET', data = {}) => {
     if (MOCK_MODE) {
         const key = `${method} ${url.split('?')[0]}`
         const mockResult = MOCK_DATA[key]
-        console.log(`[Mock] ${key}`, mockResult !== undefined ? '✅' : '⚠️ 无匹配')
         return Promise.resolve(mockResult !== undefined ? mockResult : {})
     }
 
@@ -30,7 +29,7 @@ export const request = (url, method = 'GET', data = {}) => {
             url: fullUrl,
             method,
             data,
-            timeout: 60000,
+            timeout: 120000,
             header: {
                 'content-type': 'application/json'
             },
@@ -54,87 +53,3 @@ export const request = (url, method = 'GET', data = {}) => {
 export const get = (url, data) => request(url, 'GET', data)
 export const post = (url, data) => request(url, 'POST', data)
 export const del = (url, data) => request(url, 'DELETE', data)
-
-export const postStream = async (url, data = {}, handlers = {}) => {
-    const fullUrl = config.baseUrl + url
-
-    if (typeof fetch !== 'function') {
-        throw new Error('stream_not_supported')
-    }
-
-    let response
-    try {
-        response = await fetch(fullUrl, {
-            method: 'POST',
-            headers: {
-                'content-type': 'application/json'
-            },
-            body: JSON.stringify(data),
-            signal: handlers.signal
-        })
-    } catch (error) {
-        if (error?.name === 'AbortError') {
-            throw new Error('stream_aborted')
-        }
-        throw error
-    }
-
-    if (!response.ok || !response.body || typeof response.body.getReader !== 'function') {
-        throw new Error('stream_not_supported')
-    }
-
-    const reader = response.body.getReader()
-    const decoder = new TextDecoder('utf-8')
-    let buffer = ''
-
-    while (true) {
-        let result
-        try {
-            result = await reader.read()
-        } catch (error) {
-            if (error?.name === 'AbortError') {
-                throw new Error('stream_aborted')
-            }
-            throw error
-        }
-
-        const { value, done } = result
-        if (done) break
-
-        buffer += decoder.decode(value, { stream: true })
-        const lines = buffer.split('\n')
-        buffer = lines.pop() || ''
-
-        for (const line of lines) {
-            const payload = line.trim()
-            if (!payload) continue
-            let parsed
-            try {
-                parsed = JSON.parse(payload)
-            } catch (error) {
-                continue
-            }
-
-            if (parsed.type === 'start' && handlers.onStart) {
-                handlers.onStart(parsed)
-            }
-            if (parsed.type === 'delta' && handlers.onDelta) {
-                handlers.onDelta(parsed.content || '', parsed)
-            }
-            if (parsed.type === 'end' && handlers.onEnd) {
-                handlers.onEnd(parsed)
-            }
-        }
-    }
-
-    if (buffer.trim()) {
-        try {
-            const parsed = JSON.parse(buffer.trim())
-            if (parsed.type === 'end' && handlers.onEnd) {
-                handlers.onEnd(parsed)
-            }
-        } catch (error) {
-            console.warn('stream tail parse failed', error)
-        }
-    }
-}

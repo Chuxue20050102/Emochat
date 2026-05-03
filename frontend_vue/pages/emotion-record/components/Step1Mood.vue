@@ -57,13 +57,13 @@ defineEmits(['select'])
 .card-title {
   font-size: 30rpx;
   font-weight: 700;
-  color: #2d3451;
+  color: $emo-text-main;
   margin-bottom: 10rpx;
 }
 
 .card-desc {
   font-size: 25rpx;
-  color: #5f6b86;
+  color: $emo-text-sub;
   line-height: 1.5;
 }
 
@@ -81,13 +81,13 @@ defineEmits(['select'])
   justify-content: center;
   align-items: center;
   gap: 6rpx;
-  background: rgba(245, 248, 255, 0.92);
-  border: 1rpx solid rgba(223, 232, 247, 0.8);
+  background: rgba(255, 252, 247, 0.78);
+  border: 1rpx solid rgba(232, 219, 207, 0.82);
 }
 
 .emoji-item.selected {
-  background: linear-gradient(135deg, rgba(141, 187, 255, 0.25), rgba(142, 222, 195, 0.26));
-  border-color: rgba(130, 170, 240, 0.55);
+  background: linear-gradient(135deg, rgba(255, 220, 181, 0.48), rgba(188, 226, 205, 0.5));
+  border-color: rgba(92, 131, 111, 0.38);
 }
 
 .emoji-icon {
@@ -96,6 +96,6 @@ defineEmits(['select'])
 
 .emoji-name {
   font-size: 24rpx;
-  color: #2e3449;
+  color: $emo-text-main;
 }
 </style>

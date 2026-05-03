@@ -3,14 +3,14 @@
   "version": "1.0.0",
   "description": "EmoChat 情绪聊天应用前端",
   "scripts": {
-    "dev:h5": "uni",
-    "build:h5": "uni build",
-    "dev:mp-weixin": "uni -p mp-weixin",
-    "build:mp-weixin": "uni build -p mp-weixin",
-    "dev:mp-alipay": "uni -p mp-alipay",
-    "build:mp-alipay": "uni build -p mp-alipay",
-    "dev:app": "uni -p app",
-    "build:app": "uni build -p app"
+    "dev:h5": "set UNI_INPUT_DIR=.&& uni",
+    "build:h5": "set UNI_INPUT_DIR=.&& uni build",
+    "dev:mp-weixin": "set UNI_INPUT_DIR=.&& uni -p mp-weixin",
+    "build:mp-weixin": "set UNI_INPUT_DIR=.&& uni build -p mp-weixin",
+    "dev:mp-alipay": "set UNI_INPUT_DIR=.&& uni -p mp-alipay",
+    "build:mp-alipay": "set UNI_INPUT_DIR=.&& uni build -p mp-alipay",
+    "dev:app": "set UNI_INPUT_DIR=.&& uni -p app",
+    "build:app": "set UNI_INPUT_DIR=.&& uni build -p app"
   },
   "dependencies": {
     "@dcloudio/uni-app": "3.0.0-4010520240507001",
@@ -19,8 +19,8 @@
     "@dcloudio/uni-h5": "3.0.0-4010520240507001",
     "@dcloudio/uni-mp-alipay": "3.0.0-4010520240507001",
     "@dcloudio/uni-mp-weixin": "3.0.0-4010520240507001",
-    "vue": "^3.4.21",
-    "pinia": "^2.1.7"
+    "pinia": "^2.1.7",
+    "vue": "^3.4.21"
   },
   "devDependencies": {
     "@dcloudio/types": "^3.4.8",
@@ -28,6 +28,7 @@
     "@dcloudio/uni-cli-shared": "3.0.0-4010520240507001",
     "@dcloudio/uni-stacktracey": "3.0.0-4010520240507001",
     "@dcloudio/vite-plugin-uni": "3.0.0-4010520240507001",
+    "sass": "^1.99.0",
     "typescript": "^5.4.5",
     "vite": "5.2.8"
   }
