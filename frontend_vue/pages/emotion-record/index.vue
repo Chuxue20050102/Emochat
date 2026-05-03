@@ -1,6 +1,6 @@
 ﻿<template>
-  <view class="record-page" :style="{ background: currentBgColor }">
-    <view class="hero-gradient"></view>
+  <view class="record-page" :style="recordPageStyle">
+    <view class="hero-gradient" :style="emotionGlowStyle"></view>
 
     <view class="header">
       <text class="back-btn" @click="handleBack">返回</text>
@@ -36,6 +36,7 @@
           :selectedSubTags="selectedSubTags"
           :selectedEmotion="selectedEmotion"
           @toggle="toggleSubTag"
+          @add-custom="addCustomSubTag"
         />
 
         <Step4FreeInput
@@ -72,34 +73,42 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { onHide, onShow } from '@dcloudio/uni-app'
 
 import { recordEmotionApi } from '@/api/index.js'
-import { emotionList, reasonTags } from '@/config/emotionConfig.js'
+import { emotionList as defaultEmotionList, reasonTags as defaultReasonTags, fetchEmotionConfig } from '@/config/emotionConfig.js'
 import Step1Mood from './components/Step1Mood.vue'
 import Step2Reason from './components/Step2Reason.vue'
 import Step3SubTags from './components/Step3SubTags.vue'
 import Step4FreeInput from './components/Step4FreeInput.vue'
 import Step5Feedback from './components/Step5Feedback.vue'
 
+const emotionList = ref(defaultEmotionList)
+const reasonTags = ref(defaultReasonTags)
+
 const currentStep = ref(1)
 const selectedEmotion = ref(null)
 const selectedReasons = ref([])
 const selectedSubTags = ref([])
 const customReasonTags = ref([])
+const customSubTags = ref([])
 const textContent = ref('')
 const keyboardHeight = ref(0)
 const saving = ref(false)
 const isTextInputFocused = ref(false)
 let keyboardHeightHandler = null
 
-onShow(() => {
+onShow(async () => {
   uni.hideTabBar({ animation: false })
   bindKeyboardHeightChange()
   resetForm()
+
+  const config = await fetchEmotionConfig()
+  emotionList.value = config.emotionList
+  reasonTags.value = config.reasonTags
 
   const preSelected = uni.getStorageSync('preSelectedEmotion')
   if (!preSelected) return
 
   uni.removeStorageSync('preSelectedEmotion')
-  const match = emotionList.find((item) => item.name === preSelected)
+  const match = emotionList.value.find((item) => item.name === preSelected)
   if (!match) return
 
   selectedEmotion.value = match
@@ -114,9 +123,24 @@ onBeforeUnmount(() => {
   unbindKeyboardHeightChange()
 })
 
-const allReasonTags = computed(() => [...reasonTags, ...customReasonTags.value])
-const currentBgColor = computed(() => selectedEmotion.value?.bgColor || 'linear-gradient(180deg, #f8fbff 0%, #f3f6fd 100%)')
-const currentSubTags = computed(() => selectedEmotion.value?.subTags || [])
+const allReasonTags = computed(() => [...reasonTags.value, ...customReasonTags.value])
+const currentSubTags = computed(() => {
+  const base = selectedEmotion.value?.subTags || []
+  return [...base, ...customSubTags.value]
+})
+const recordPageStyle = computed(() => ({
+  background: selectedEmotion.value?.bgColor || 'linear-gradient(180deg, #fff7ee 0%, #f7fbf6 48%, #f7efe8 100%)',
+}))
+const emotionGlowStyle = computed(() => {
+  const glow = selectedEmotion.value?.glowColor || 'rgba(158, 214, 187, 0.28)'
+  return {
+    background: `
+      radial-gradient(circle at 18% 16%, ${glow} 0%, transparent 42%),
+      radial-gradient(circle at 86% 20%, rgba(255, 207, 161, 0.26) 0%, transparent 38%),
+      radial-gradient(circle at 34% 86%, rgba(255, 255, 255, 0.42) 0%, transparent 48%)
+    `,
+  }
+})
 const stepInputOffset = computed(() => (currentStep.value === 4 ? keyboardHeight.value : 0))
 const shouldShowFooter = computed(
   () => currentStep.value < 5 && !(currentStep.value === 4 && (isTextInputFocused.value || keyboardHeight.value > 0))
@@ -134,6 +158,7 @@ const resetForm = () => {
   selectedReasons.value = []
   selectedSubTags.value = []
   customReasonTags.value = []
+  customSubTags.value = []
   textContent.value = ''
   saving.value = false
 }
@@ -161,6 +186,18 @@ const addCustomReason = (tag) => {
   }
   if (!selectedReasons.value.includes(value)) {
     selectedReasons.value.push(value)
+  }
+}
+
+const addCustomSubTag = (tag) => {
+  const value = String(tag || '').trim()
+  if (!value) return
+
+  if (!customSubTags.value.includes(value)) {
+    customSubTags.value.push(value)
+  }
+  if (!selectedSubTags.value.includes(value)) {
+    selectedSubTags.value.push(value)
   }
 }
 
@@ -258,7 +295,7 @@ const handleSaveAndChat = async () => {
   }
 
   uni.setStorageSync('pendingChatContext', recordData)
-  uni.showToast({ title: '已保存，正在跳转 AI', icon: 'none' })
+  uni.showToast({ title: '已保存，去陪你聊聊', icon: 'none' })
   uni.switchTab({ url: '/pages/chat/index' })
 }
 
@@ -308,6 +345,7 @@ const resetKeyboardState = () => {
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  transition: background 0.3s ease;
 }
 
 .hero-gradient {
@@ -315,10 +353,8 @@ const resetKeyboardState = () => {
   inset: -10%;
   z-index: 0;
   filter: blur(70rpx);
-  background:
-    radial-gradient(circle at 14% 20%, rgba(141, 187, 255, 0.22) 0%, transparent 36%),
-    radial-gradient(circle at 82% 22%, rgba(255, 174, 161, 0.23) 0%, transparent 34%),
-    radial-gradient(circle at 25% 84%, rgba(142, 222, 195, 0.2) 0%, transparent 34%);
+  opacity: 0.76;
+  transition: background 0.3s ease;
 }
 
 .header {
@@ -336,7 +372,7 @@ const resetKeyboardState = () => {
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.66);
   border: 2rpx solid rgba(255, 255, 255, 0.88);
-  color: #5f6b86;
+  color: $emo-text-sub;
   font-size: 24rpx;
   display: flex;
   align-items: center;
@@ -357,11 +393,11 @@ const resetKeyboardState = () => {
 .step-text {
   font-size: 30rpx;
   font-weight: 700;
-  color: #24304e;
+  color: $emo-text-main;
 }
 
 .step-total {
-  color: #8f99b1;
+  color: $emo-text-disabled;
   font-size: 24rpx;
 }
 
@@ -375,7 +411,7 @@ const resetKeyboardState = () => {
 .progress-inner {
   height: 100%;
   border-radius: 999rpx;
-  background: linear-gradient(90deg, #8eb9ff, #82d9bb);
+  background: linear-gradient(90deg, #d9a27f, #5c836f);
 }
 
 .content-wrap {

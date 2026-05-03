@@ -1,16 +1,13 @@
-const LOCAL_IP = '172.20.10.3'
-const LOCAL_PORT = '8000'
+const LOCAL_IP = 'x9bff6ca.natappfree.cc'
+const LOCAL_PORT = ''
 
-const isH5 = typeof window !== 'undefined' && window.location
-const isDev = process.env.NODE_ENV === 'development'
+// Default keeps native/app environments on natapp.
+let baseUrl = `http://${LOCAL_IP}`
 
-let baseUrl = ''
-
-if (isH5 && isDev) {
-    baseUrl = ''
-} else if (isDev) {
-    baseUrl = `http://${LOCAL_IP}:${LOCAL_PORT}`
-}
+// H5 goes through devServer proxy (/api -> backend), so use same-origin.
+// #ifdef H5
+baseUrl = ''
+// #endif
 
 const config = {
     baseUrl: baseUrl,
@@ -26,6 +23,13 @@ export function getLocalIp() {
 }
 
 export function setLocalIp(ip) {
-    config.baseUrl = `http://${ip}:${LOCAL_PORT}`
+    // H5 should always keep same-origin and use /api proxy.
+    // #ifdef H5
+    config.baseUrl = ''
+    config.localIp = ip
+    return
+    // #endif
+
+    config.baseUrl = LOCAL_PORT ? `http://${ip}:${LOCAL_PORT}` : `http://${ip}`
     config.localIp = ip
 }

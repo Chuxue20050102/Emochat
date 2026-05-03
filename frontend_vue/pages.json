@@ -31,6 +31,12 @@
       }
     },
     {
+      "path": "pages/profile/detail",
+      "style": {
+        "navigationStyle": "custom"
+      }
+    },
+    {
       "path": "pages/profile/index",
       "style": {
         "navigationStyle": "custom"
@@ -40,17 +46,17 @@
   "globalStyle": {
     "navigationBarTextStyle": "black",
     "navigationBarTitleText": "EmoChat",
-    "navigationBarBackgroundColor": "#f7f8fc",
-    "backgroundColor": "#f7f8fc"
+    "navigationBarBackgroundColor": "#f8f1e9",
+    "backgroundColor": "#f8f1e9"
   },
   "tabBar": {
-    "color": "#93a0b8",
-    "selectedColor": "#4f7cff",
-    "backgroundColor": "#ffffff",
+    "color": "#9a897d",
+    "selectedColor": "#5c836f",
+    "backgroundColor": "#fffaf3",
     "list": [
       {
         "pagePath": "pages/index/index",
-        "text": "首页"
+        "text": "今天"
       },
       {
         "pagePath": "pages/emotion-record/index",
@@ -58,7 +64,7 @@
       },
       {
         "pagePath": "pages/chat/index",
-        "text": "聊天"
+        "text": "陪聊"
       },
       {
         "pagePath": "pages/profile/index",

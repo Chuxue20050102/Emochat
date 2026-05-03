@@ -62,14 +62,14 @@ const handleAddCustomTag = () => {
 .step-title {
   font-size: 34rpx;
   font-weight: 700;
-  color: #25314a;
+  color: $emo-text-main;
   margin-bottom: 20rpx;
 }
 
 .sub-title-mark {
   font-size: 24rpx;
   font-weight: 400;
-  color: #8090ad;
+  color: $emo-text-disabled;
   margin-left: 8rpx;
 }
 
@@ -86,15 +86,15 @@ const handleAddCustomTag = () => {
   background: rgba(255, 255, 255, 0.9);
   padding: 0 18rpx;
   font-size: 24rpx;
-  color: #33415d;
-  border: 1rpx solid rgba(223, 232, 247, 0.8);
+  color: $emo-text-main;
+  border: 1rpx solid rgba(232, 219, 207, 0.8);
 }
 
 .add-btn {
   width: 100rpx;
   height: 78rpx;
   border-radius: 18rpx;
-  background: linear-gradient(135deg, #8eb9ff, #82d9bb);
+  background: linear-gradient(135deg, #5c836f, #3f6d59);
   color: #fff;
   font-size: 24rpx;
   font-weight: 600;
@@ -116,13 +116,13 @@ const handleAddCustomTag = () => {
   align-items: center;
   justify-content: center;
   background: rgba(255, 255, 255, 0.86);
-  color: #3a4765;
+  color: $emo-text-main;
   font-size: 26rpx;
 }
 
 .tag-item.selected {
-  background: linear-gradient(135deg, rgba(141, 187, 255, 0.27), rgba(142, 222, 195, 0.28));
-  color: #22314e;
+  background: linear-gradient(135deg, rgba(255, 220, 181, 0.48), rgba(188, 226, 205, 0.5));
+  color: $emo-sage-text;
   font-weight: 600;
 }
 </style>

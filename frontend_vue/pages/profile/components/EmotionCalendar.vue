@@ -19,7 +19,7 @@
         v-for="(day, index) in calendarDays"
         :key="index"
         class="day-cell"
-        :class="{ 'empty-cell': !day.date, today: day.isToday, selected: selectedDate === day.fullDate }"
+        :class="{ 'empty-cell': !day.date, today: day.isToday }"
         @click="handleDayClick(day)"
       >
         <text class="day-number" v-if="day.date">{{ day.date }}</text>
@@ -45,7 +45,6 @@ import { computed, ref } from 'vue'
 const props = defineProps({
   mockRecords: { type: Object, default: () => ({}) },
   emotionRules: { type: Object, default: () => ({}) },
-  selectedDate: { type: String, default: '' },
 })
 
 const emit = defineEmits(['dayClick', 'monthChange'])
@@ -111,7 +110,7 @@ const handleDayClick = (day) => {
   border: 2rpx solid rgba(255, 255, 255, 0.88);
   border-radius: 34rpx;
   padding: 26rpx;
-  box-shadow: 0 18rpx 44rpx rgba(45, 57, 94, 0.14);
+  box-shadow: $emo-shadow-card;
 }
 
 .calendar-header {
@@ -124,7 +123,7 @@ const handleDayClick = (day) => {
 .current-month {
   font-size: 30rpx;
   font-weight: 700;
-  color: #202a43;
+  color: $emo-text-main;
 }
 
 .arrow {
@@ -134,8 +133,8 @@ const handleDayClick = (day) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(246, 249, 255, 0.95);
-  border: 2rpx solid #dce3f4;
+  background: rgba(255, 255, 255, 0.72);
+  border: 2rpx solid rgba(232, 219, 207, 0.9);
 }
 
 .arrow.disabled {
@@ -144,7 +143,7 @@ const handleDayClick = (day) => {
 
 .arrow-icon {
   font-size: 28rpx;
-  color: #64708c;
+  color: $emo-text-sub;
   line-height: 1;
 }
 
@@ -158,7 +157,7 @@ const handleDayClick = (day) => {
   width: calc(100% / 7);
   text-align: center;
   font-size: 22rpx;
-  color: #8390ab;
+  color: $emo-text-disabled;
 }
 
 .days-grid {
@@ -188,13 +187,13 @@ const handleDayClick = (day) => {
   line-height: 46rpx;
   text-align: center;
   font-size: 24rpx;
-  color: #33415f;
+  color: $emo-text-main;
 }
 
 .day-cell.today .day-number {
-  background: rgba(141, 187, 255, 0.24);
+  background: rgba(237, 250, 243, 0.9);
   border-radius: 50%;
-  color: #2f4f86;
+  color: $emo-sage-text;
   font-weight: 700;
 }
 
@@ -217,7 +216,4 @@ const handleDayClick = (day) => {
   box-sizing: border-box;
 }
 
-.day-cell.selected .emotion-dot {
-  transform: scale(1.3);
-}
 </style>
