@@ -9,6 +9,7 @@ load_dotenv()
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from database import engine
 import models
@@ -39,6 +40,9 @@ app.include_router(emotion.router)
 app.include_router(user.router)
 app.include_router(chat.router)
 app.include_router(common.router)
+
+# ==== 挂载静态文件服务（用于访问上传的头像等资源） ====
+app.mount("/static", StaticFiles(directory="uploads"), name="static")
 
 
 if __name__ == "__main__":
