@@ -233,7 +233,7 @@ frontend_vue/config/index.js
 const LOCAL_IP = 'your-domain.natappfree.cc'
 ```
 
-生产部署建议使用 Nginx / Caddy 反向代理 FastAPI 服务，并通过 Certbot、Caddy 自动证书或云厂商证书开启 HTTPS。小程序或 App 真机环境需要使用 HTTPS 域名，并在平台后台配置合法请求域名。
+小程序或 App 真机环境通常需要使用 HTTPS 域名，并在对应平台后台配置合法请求域名。
 
 ## 核心接口
 
